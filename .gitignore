@@ -1,2 +1,4 @@
-/bin/
+/bin/Botworks.db
+/bin/go_build_BotWorks.exe
 /.idea/
+/Botworks.db
