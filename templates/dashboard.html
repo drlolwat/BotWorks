@@ -1,0 +1,115 @@
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+        <div class="col-sm-3">
+          <div class="card card-body bg-light">
+            <div class="well">
+              <h4>Bots running</h4>
+                  <p>{{ .RunningBots }}</p> 
+            </div>
+          </div>
+        </div>
+          <div class="col-sm-3">
+            <div class="card card-body bg-light">
+              <h4>Bots offline</h4>
+              <p>{{ .StoppedBots }}</p>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="card card-body bg-light">
+              <h4>Unique scripts running</h4>
+              <p>{{ .UniqueScripts }}</p>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="card card-body bg-light">
+              <h4>Server time</h4>
+              <p>Time</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    Online Accounts
+                </div>
+                
+  
+                <div class="card-header tab-regular">
+                    <ul class="nav nav-pills card-header-pills" id="myTab" role="tablist">
+                    
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="card-0" role="tabpanel" aria-labelledby="card-tab-0">
+                            <p class="card-text">
+                                <a class='btn btn-primary btn-xs btn-danger' href='<?php echo WWW; ?>/?_page=dashboard&stopall' role='button'>Stop all instances in this group</a>
+                            <table width='100%' id="accountsTable" name="accountsTable" class="display">
+                                <thead>
+                                <tr>
+                                    <th>Account</td>
+                                    <th>Script</td>
+                                    <th>Status</td>
+                                    <th>Options</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                
+                                </tbody>
+                            </table>
+                            </p>
+                        </div>
+  
+                    
+                    </div>
+                </div>
+  
+            </div>
+        </div>
+  
+  
+        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+          <div class="card">
+              <div class="card-header">
+                  Offline Accounts
+              </div>
+
+              <div class="card-header tab-regular">
+                  <ul class="nav nav-pills card-header-pills" id="myTab" role="tablist">
+
+                  </ul>
+              </div>
+  
+              <div class="card-body">
+                  <div class="tab-content" id="myTabContent">
+                      <div class="tab-pane fade show active" id="card-90" role="tabpanel" aria-labelledby="card-tab-90">
+                          <p class="card-text">
+                              <a class='btn btn-primary btn-xs btn-success' href='<?php echo WWW; ?>/?_page=dashboard&startAll' role='button'>Start all instances in this group</a>
+                              <table width='100%' name="offlineAccounts" id="offlineAccounts" class="display">
+                                <thead>
+                                  <tr>
+                                      <th>Account name</td>
+                                      <th>Script name</td>
+                                      <th>Proxy name</td>
+                                      <th>Options</td>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                              </table>
+                          </p>
+                      </div>
+  
+     
+  
+                  </div>
+              </div>
+          </div>
+        </div>
