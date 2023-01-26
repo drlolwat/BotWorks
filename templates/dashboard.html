@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-  
+
         <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="section-block" id="c-nav">
@@ -39,18 +39,23 @@
                 <div class="card-header">
                     Online Accounts
                 </div>
-                
-  
                 <div class="card-header tab-regular">
                     <ul class="nav nav-pills card-header-pills" id="myTab" role="tablist">
-                    
+                        <li class="nav-item">
+                            <a class="nav-link active" id="card-tab-0" data-toggle="tab" href="#card-0" role="tab" aria-controls="card-0" aria-selected="true">All Accounts</a>
+                        </li>
+                        {{ range .GroupData }}
+                        <li class="nav-item">
+                            <a class="nav-link" id="card-tab-{{ .Id }}" data-toggle="tab" href="#card-{{ .Id }}" role="tab" aria-controls="card-{{ .Id }}" aria-selected="false">{{ .Name }}</a>
+                        </li>
+                        {{ end }}
                     </ul>
                 </div>
                 <div class="card-body">
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="card-0" role="tabpanel" aria-labelledby="card-tab-0">
                             <p class="card-text">
-                                <a class='btn btn-primary btn-xs btn-danger' href='<?php echo WWW; ?>/?_page=dashboard&stopall' role='button'>Stop all instances in this group</a>
+                                <a class='btn btn-primary btn-xs btn-danger' href='/stop/all' role='button'>Stop all instances in this group</a>
                             <table width='100%' id="accountsTable" name="accountsTable" class="display">
                                 <thead>
                                 <tr>
@@ -61,19 +66,57 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                
+                                {{ range .OnlineBotData }}
+                                    <tr>
+                                        <td>{{ .AccountName }}</td>
+                                        <td>{{ .Script }}</td>
+                                        <td>{{ .Status }}</td>
+                                        <td>
+                                            <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
+                                            <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                        </td>
+                                    </tr>
+                                {{ end }}
                                 </tbody>
                             </table>
                             </p>
                         </div>
-  
-                    
+
+                        {{ range .GroupData }}
+                        <div class="tab-pane fade" id="card-{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-{{ .Id }}">
+                            <p class="card-text">
+                                <a class='btn btn-primary btn-xs btn-danger' href='/dashboard/stop/group/{{ .Id }}' role='button'>Stop all instances in this group</a>
+                            <table width='100%' id="accountsTable-{{ .Id }}" name="accountsTable-{{ .Id }}" class="display">
+                                <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Script</th>
+                                    <th>Status</th>
+                                    <th>Options</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{ range .BotsOnline }}
+                                    <tr>
+                                        <td>{{ .AccountName }}</td>
+                                        <td>{{ .Script }}</td>
+                                        <td>{{ .Status }}</td>
+                                        <td>
+                                            <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
+                                            <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+                            </p>
+                        </div>
+                        {{ end }}
                     </div>
                 </div>
   
             </div>
         </div>
-  
   
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
           <div class="card">
@@ -113,3 +156,47 @@
               </div>
           </div>
         </div>
+
+            <script>
+                $(document).ready(function () {
+                    $('#accountsTable').DataTable({
+                        scrollCollapse: false,
+                        paging: true,
+                        scrollX: true,
+                        order: [[1, 'desc']],
+                    });
+                });
+                $(document).ready(function () {
+                    $('#offlineAccounts').DataTable({
+                        scrollCollapse: false,
+                        paging: true,
+                        scrollX: true,
+                        order: [[1, 'desc']],
+                    });
+                });
+
+                {{ range .GroupData }}
+                    $(document).ready(function () {
+                        $('#accountsTable-{{ .Id }}').DataTable({
+                            scrollCollapse: false,
+                            paging: true,
+                            scrollX: true,
+                            order: [[1, 'desc']],
+                        });
+                    });
+                    $(document).ready(function () {
+                        $('#offlineAccounts-9{{ .Id }}').DataTable({
+                            scrollCollapse: false,
+                            paging: true,
+                            scrollX: true,
+                            order: [[1, 'desc']],
+                        });
+                    });
+                {{ end }}
+
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+                    $($.fn.dataTable.tables(true)).DataTable()
+                        .columns.adjust();
+                });
+
+            </script>

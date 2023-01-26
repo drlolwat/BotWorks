@@ -28,6 +28,7 @@ func main() {
 	fs := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", fs))
 
+	// begin routine for web serving
 	go func() {
 		err := http.ListenAndServe(":8080", r)
 		if err != nil {
@@ -36,6 +37,8 @@ func main() {
 	}()
 
 	println("BotWorks is now running on port 8080.")
+
+	// Keep this bitch going forever and ever, perhaps implement commands
 	for true {
 		text, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		println(text)

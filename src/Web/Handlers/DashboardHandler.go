@@ -6,6 +6,7 @@ import (
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
 	"BotWorks/src/Web/Template"
+	"database/sql"
 	"fmt"
 	"net/http"
 )
@@ -26,30 +27,37 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("userid: ", user.ID)
-
-	// get bot data for dash
-	rows, err := Storage.GetDb().Query("SELECT name,proxy_id,script_id,pid,group_id FROM accounts WHERE customer_id = ?", user.ID)
+	// fetch my bots
+	rows, err := Storage.GetDb().Query("SELECT a.id,a.name,a.proxy_id,a.script_id,a.pid,a.group_id,b.name AS script_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.customer_id = ?", user.ID)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var runningBots = 0
 	var stoppedBots = 0
 	var uniqueScripts = 0
 	var scripts []int
+	var runningBotData []Structs.OnlineBotData
 
 	for rows.Next() {
+		var accountId int
 		var name string
 		var proxyId int
 		var scriptId int
 		var pid int
 		var groupId int
+		var scriptName string
+		var status string
 
-		err = rows.Scan(&name, &proxyId, &scriptId, &pid, &groupId)
+		err = rows.Scan(&accountId, &name, &proxyId, &scriptId, &pid, &groupId, &scriptName)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -64,23 +72,93 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			stoppedBots += 1
 		}
+
+		//TODO status comes from the logfile
+		status = "No Status"
+
+		var botData = Structs.OnlineBotData{
+			AccountId:   accountId,
+			AccountName: name,
+			Script:      scriptName,
+			Status:      status,
+			Pid:         pid,
+			GroupId:     groupId,
+		}
+
+		if !Helpers.ContainsOnlineBotData(botData, runningBotData) {
+			runningBotData = append(runningBotData, botData)
+		}
 	}
 
 	uniqueScripts = len(scripts)
+	var groups []Structs.GroupData
 
-	fmt.Println("Bots running:", runningBots)
-	fmt.Println("Bots offline:", stoppedBots)
-	fmt.Println("Unique scripts:", uniqueScripts)
+	// fetch my groups
+	rows, err = Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id = ?", user.ID)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	for rows.Next() {
+		var groupId int
+		var groupName string
+		var groupData = Structs.GroupData{}
+		var groupRunningBotData []Structs.OnlineBotData
+
+		err = rows.Scan(&groupId, &groupName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		for _, bots := range runningBotData {
+			if bots.GroupId == groupId {
+				var localRunningBotData = Structs.OnlineBotData{
+					AccountId:   bots.AccountId,
+					AccountName: bots.AccountName,
+					Script:      bots.Script,
+					Status:      bots.Status,
+					Pid:         bots.Pid,
+					GroupId:     0,
+				}
+
+				groupRunningBotData = append(groupRunningBotData, localRunningBotData)
+			}
+		}
+
+		groupData = Structs.GroupData{
+			Id:         groupId,
+			Name:       groupName,
+			BotsOnline: groupRunningBotData,
+		}
+
+		if !Helpers.ContainsGroupData(groupData, groups) {
+			groups = append(groups, groupData)
+		}
+	}
 
 	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", nil)
 	if err != nil {
 		println("failed to execute tpl: bootstrap_header")
 	}
 
-	data := Structs.DashboardData{RunningBots: runningBots, StoppedBots: stoppedBots, UniqueScripts: uniqueScripts, CurrentTime: "1234"}
+	data := Structs.DashboardData{RunningBots: runningBots, StoppedBots: stoppedBots, UniqueScripts: uniqueScripts, CurrentTime: "1234", OnlineBotData: runningBotData, GroupData: groups}
 	err = Template.GetTpl().ExecuteTemplate(w, "dashboard.html", data)
 	if err != nil {
-		println("failed to execute tpl: dashboard")
+		println(err.Error())
 		return
+	}
+
+	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_footer.html", nil)
+	if err != nil {
+		println("failed to execute tpl: bootstrap_footer")
 	}
 }

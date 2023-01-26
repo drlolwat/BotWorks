@@ -5,4 +5,6 @@ type OnlineBotData struct {
 	AccountName string
 	Script      string
 	Status      string
+	Pid         int
+	GroupId     int
 }
