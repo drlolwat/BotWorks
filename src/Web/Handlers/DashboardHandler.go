@@ -127,7 +127,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 					Script:      bots.Script,
 					Status:      bots.Status,
 					Pid:         bots.Pid,
-					GroupId:     0,
+					GroupId:     bots.GroupId,
 				}
 
 				groupRunningBotData = append(groupRunningBotData, localRunningBotData)
