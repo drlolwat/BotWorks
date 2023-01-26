@@ -11,7 +11,7 @@ func ContainsInt(check int, numbers []int) bool {
 	return false
 }
 
-func ContainsOnlineBotData(check Structs.OnlineBotData, haystack []Structs.OnlineBotData) bool {
+func ContainsDashboardBotData(check Structs.DashboardBotData, haystack []Structs.DashboardBotData) bool {
 	for _, item := range haystack {
 		if item == check {
 			return true

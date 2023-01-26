@@ -24,7 +24,7 @@
           <div class="col-sm-3">
             <div class="card card-body bg-light">
               <h4>Server time</h4>
-              <p>Time</p>
+              <p>{{ .CurrentTime }}</p>
             </div>
           </div>
         </div>
@@ -126,32 +126,78 @@
 
               <div class="card-header tab-regular">
                   <ul class="nav nav-pills card-header-pills" id="myTab" role="tablist">
-
+                      <li class="nav-item">
+                          <a class="nav-link active" id="card-tab-90" data-toggle="tab" href="#card-90" role="tab" aria-controls="card-90" aria-selected="true">All Accounts</a>
+                      </li>
+                      {{ range .GroupData }}
+                      <li class="nav-item">
+                          <a class="nav-link" id="card-tab-9{{ .Id }}" data-toggle="tab" href="#card-9{{ .Id }}" role="tab" aria-controls="card-9{{ .Id }}" aria-selected="false">{{ .Name }}</a>
+                      </li>
+                      {{ end }}
                   </ul>
               </div>
-  
+
               <div class="card-body">
                   <div class="tab-content" id="myTabContent">
                       <div class="tab-pane fade show active" id="card-90" role="tabpanel" aria-labelledby="card-tab-90">
                           <p class="card-text">
-                              <a class='btn btn-primary btn-xs btn-success' href='<?php echo WWW; ?>/?_page=dashboard&startAll' role='button'>Start all instances in this group</a>
-                              <table width='100%' name="offlineAccounts" id="offlineAccounts" class="display">
-                                <thead>
-                                  <tr>
-                                      <th>Account name</td>
-                                      <th>Script name</td>
-                                      <th>Proxy name</td>
-                                      <th>Options</td>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                              </table>
+                              <a class='btn btn-primary btn-xs btn-success' href='/start/all' role='button'>Start all instances in this group</a>
+                          <table width='100%' id="offlineAccounts" name="offlineAccounts" class="display">
+                              <thead>
+                              <tr>
+                                  <th>Account</td>
+                                  <th>Script</td>
+                                  <th>Status</td>
+                                  <th>Options</td>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              {{ range .OfflineBotData }}
+                              <tr>
+                                  <td>{{ .AccountName }}</td>
+                                  <td>{{ .Script }}</td>
+                                  <td>{{ .Status }}</td>
+                                  <td>
+                                      <a href="/dashboard/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Stop</a>
+                                      <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                  </td>
+                              </tr>
+                              {{ end }}
+                              </tbody>
+                          </table>
                           </p>
                       </div>
-  
-     
-  
+
+                      {{ range .GroupData }}
+                      <div class="tab-pane fade" id="card-9{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-{{ .Id }}">
+                          <p class="card-text">
+                              <a class='btn btn-primary btn-xs btn-danger' href='/dashboard/stop/group/{{ .Id }}' role='button'>Stop all instances in this group</a>
+                          <table width='100%' id="accountsTable-9{{ .Id }}" name="accountsTable-{{ .Id }}" class="display">
+                              <thead>
+                              <tr>
+                                  <th>Account</th>
+                                  <th>Script</th>
+                                  <th>Status</th>
+                                  <th>Options</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              {{ range .BotsOffline }}
+                              <tr>
+                                  <td>{{ .AccountName }}</td>
+                                  <td>{{ .Script }}</td>
+                                  <td>{{ .Status }}</td>
+                                  <td>
+                                      <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
+                                      <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                  </td>
+                              </tr>
+                              {{ end }}
+                              </tbody>
+                          </table>
+                          </p>
+                      </div>
+                      {{ end }}
                   </div>
               </div>
           </div>

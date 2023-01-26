@@ -1,6 +1,6 @@
 package Structs
 
-type OnlineBotData struct {
+type DashboardBotData struct {
 	AccountId   int
 	AccountName string
 	Script      string

@@ -45,7 +45,8 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	var stoppedBots = 0
 	var uniqueScripts = 0
 	var scripts []int
-	var runningBotData []Structs.OnlineBotData
+	var runningBotData []Structs.DashboardBotData
+	var offlineBotData []Structs.DashboardBotData
 
 	for rows.Next() {
 		var accountId int
@@ -68,15 +69,15 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if pid > 0 {
-			runningBots += 1
+			runningBots++
 		} else {
-			stoppedBots += 1
+			stoppedBots++
 		}
 
 		//TODO status comes from the logfile
 		status = "No Status"
 
-		var botData = Structs.OnlineBotData{
+		var botData = Structs.DashboardBotData{
 			AccountId:   accountId,
 			AccountName: name,
 			Script:      scriptName,
@@ -85,8 +86,14 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 			GroupId:     groupId,
 		}
 
-		if !Helpers.ContainsOnlineBotData(botData, runningBotData) {
-			runningBotData = append(runningBotData, botData)
+		if pid > 0 {
+			if !Helpers.ContainsDashboardBotData(botData, runningBotData) {
+				runningBotData = append(runningBotData, botData)
+			}
+		} else {
+			if !Helpers.ContainsDashboardBotData(botData, offlineBotData) {
+				offlineBotData = append(offlineBotData, botData)
+			}
 		}
 	}
 
@@ -111,7 +118,8 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		var groupId int
 		var groupName string
 		var groupData = Structs.GroupData{}
-		var groupRunningBotData []Structs.OnlineBotData
+		var groupRunningBotData []Structs.DashboardBotData
+		var groupOfflineBotData []Structs.DashboardBotData
 
 		err = rows.Scan(&groupId, &groupName)
 		if err != nil {
@@ -121,7 +129,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, bots := range runningBotData {
 			if bots.GroupId == groupId {
-				var localRunningBotData = Structs.OnlineBotData{
+				var localRunningBotData = Structs.DashboardBotData{
 					AccountId:   bots.AccountId,
 					AccountName: bots.AccountName,
 					Script:      bots.Script,
@@ -131,6 +139,21 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				groupRunningBotData = append(groupRunningBotData, localRunningBotData)
+			}
+		}
+
+		for _, bots := range offlineBotData {
+			if bots.GroupId == groupId {
+				var localOfflineBotData = Structs.DashboardBotData{
+					AccountId:   bots.AccountId,
+					AccountName: bots.AccountName,
+					Script:      bots.Script,
+					Status:      bots.Status,
+					Pid:         bots.Pid,
+					GroupId:     bots.GroupId,
+				}
+
+				groupOfflineBotData = append(groupOfflineBotData, localOfflineBotData)
 			}
 		}
 
@@ -150,7 +173,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		println("failed to execute tpl: bootstrap_header")
 	}
 
-	data := Structs.DashboardData{RunningBots: runningBots, StoppedBots: stoppedBots, UniqueScripts: uniqueScripts, CurrentTime: "1234", OnlineBotData: runningBotData, GroupData: groups}
+	data := Structs.DashboardData{RunningBots: runningBots, StoppedBots: stoppedBots, UniqueScripts: uniqueScripts, CurrentTime: Helpers.TimeString(), OnlineBotData: runningBotData, OfflineBotData: offlineBotData, GroupData: groups}
 	err = Template.GetTpl().ExecuteTemplate(w, "dashboard.html", data)
 	if err != nil {
 		println(err.Error())
