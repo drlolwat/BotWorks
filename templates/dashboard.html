@@ -59,10 +59,10 @@
                             <table width='100%' id="accountsTable" name="accountsTable" class="display">
                                 <thead>
                                 <tr>
-                                    <th>Account</td>
-                                    <th>Script</td>
-                                    <th>Status</td>
-                                    <th>Options</td>
+                                    <th>Account</th>
+                                    <th>Script</th>
+                                    <th>Status</th>
+                                    <th>Options</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -72,8 +72,8 @@
                                         <td>{{ .Script }}</td>
                                         <td>{{ .Status }}</td>
                                         <td>
-                                            <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
-                                            <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
+                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
                                         </td>
                                     </tr>
                                 {{ end }}
@@ -85,7 +85,7 @@
                         {{ range .GroupData }}
                         <div class="tab-pane fade" id="card-{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-{{ .Id }}">
                             <p class="card-text">
-                                <a class='btn btn-primary btn-xs btn-danger' href='/dashboard/stop/group/{{ .Id }}' role='button'>Stop all instances in this group</a>
+                                <a class='btn btn-primary btn-xs btn-danger' href='/stop/group/{{ .Id }}' role='button'>Stop all instances in this group</a>
                             <table width='100%' id="accountsTable-{{ .Id }}" name="accountsTable-{{ .Id }}" class="display">
                                 <thead>
                                 <tr>
@@ -102,8 +102,8 @@
                                         <td>{{ .Script }}</td>
                                         <td>{{ .Status }}</td>
                                         <td>
-                                            <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
-                                            <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
+                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
                                         </td>
                                     </tr>
                                 {{ end }}
@@ -158,8 +158,8 @@
                                   <td>{{ .Script }}</td>
                                   <td>{{ .Status }}</td>
                                   <td>
-                                      <a href="/dashboard/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Stop</a>
-                                      <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
+                                      <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
                                   </td>
                               </tr>
                               {{ end }}
@@ -169,10 +169,10 @@
                       </div>
 
                       {{ range .GroupData }}
-                      <div class="tab-pane fade" id="card-9{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-{{ .Id }}">
+                      <div class="tab-pane fade" id="card-9{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-9{{ .Id }}">
                           <p class="card-text">
-                              <a class='btn btn-primary btn-xs btn-danger' href='/dashboard/stop/group/{{ .Id }}' role='button'>Stop all instances in this group</a>
-                          <table width='100%' id="accountsTable-9{{ .Id }}" name="accountsTable-{{ .Id }}" class="display">
+                              <a class='btn btn-primary btn-xs btn-success' href='stop/group/{{ .Id }}' role='button'>Start all instances in this group</a>
+                          <table width='100%' id="accountsTable-9{{ .Id }}" name="accountsTable-9{{ .Id }}" class="display">
                               <thead>
                               <tr>
                                   <th>Account</th>
@@ -182,14 +182,15 @@
                               </tr>
                               </thead>
                               <tbody>
+
                               {{ range .BotsOffline }}
                               <tr>
                                   <td>{{ .AccountName }}</td>
                                   <td>{{ .Script }}</td>
                                   <td>{{ .Status }}</td>
                                   <td>
-                                      <a href="/dashboard/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
-                                      <a href="/logs/" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                      <a href="start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
+                                      <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
                                   </td>
                               </tr>
                               {{ end }}
@@ -231,7 +232,7 @@
                         });
                     });
                     $(document).ready(function () {
-                        $('#offlineAccounts-9{{ .Id }}').DataTable({
+                        $('#accountsTable-9{{ .Id }}').DataTable({
                             scrollCollapse: false,
                             paging: true,
                             scrollX: true,

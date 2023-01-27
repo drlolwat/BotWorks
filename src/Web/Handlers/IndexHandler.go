@@ -50,7 +50,13 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", nil)
+	var headerInfo = Structs.PageData{
+		LoggedIn: Helpers.IsSessionValid(r),
+		Name:     "Login",
+		Url:      "login",
+	}
+
+	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", headerInfo)
 	if err != nil {
 		println("failed to execute tpl: bootstrap_header")
 	}

@@ -158,9 +158,10 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		groupData = Structs.GroupData{
-			Id:         groupId,
-			Name:       groupName,
-			BotsOnline: groupRunningBotData,
+			Id:          groupId,
+			Name:        groupName,
+			BotsOnline:  groupRunningBotData,
+			BotsOffline: groupOfflineBotData,
 		}
 
 		if !Helpers.ContainsGroupData(groupData, groups) {
@@ -168,7 +169,13 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", nil)
+	var headerInfo = Structs.PageData{
+		LoggedIn: user.ID > 0,
+		Name:     "Dashboard",
+		Url:      "dashboard",
+	}
+
+	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", headerInfo)
 	if err != nil {
 		println("failed to execute tpl: bootstrap_header")
 	}

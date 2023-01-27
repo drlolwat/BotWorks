@@ -35,6 +35,7 @@
                             <li class="nav-divider">
                                 Your Manager
                             </li>
+                            {{ if .LoggedIn }}
                             <li class="nav-item ">
                                 <a class="nav-link active" href="/dashboard" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Dashboard</a>
                             </li>
@@ -53,6 +54,11 @@
                             <li class="nav-item ">
                                 <a class="nav-link" href="/logout" aria-expanded="false"><i class="fa fa-fw fa-window-close"></i>Log out</a>
                             </li>
+                            {{ else }}
+                                <li class="nav-item ">
+                                    <a class="nav-link active" href="/" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Log in</a>
+                                </li>
+                            {{ end }}
                         </ul>
                     </div>
                 </nav>
