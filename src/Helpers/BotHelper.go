@@ -147,7 +147,12 @@ func StartBotFromId(userId int, pBotId int) bool {
 		}
 
 		pid := command.Process.Pid
-		SetBotPidById(pBotId, pid)
+		defer func(botId int, pid int) {
+			err := SetBotPidById(botId, pid)
+			if err != nil {
+
+			}
+		}(botId, pid)
 
 		return true
 	}
@@ -155,18 +160,30 @@ func StartBotFromId(userId int, pBotId int) bool {
 	return false
 }
 
-func SetBotPidById(botId int, pid int) {
-	stmt, err := Storage.GetDb().Prepare("UPDATE accounts SET pid = ? WHERE id = ?")
+func SetBotPidById(botId int, pid int) error {
+	stmt, err := Storage.GetDb().Prepare("UPDATE `accounts` SET `pid` = ? WHERE `id` = ?")
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
-	defer func(stmt *sql.Stmt) {
-		err := stmt.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(stmt)
+	res, err := stmt.Exec(pid, botId)
+	rows, err := res.RowsAffected()
 
-	_, _ = stmt.Exec(pid, botId)
+	if rows > 0 {
+		fmt.Println("updating acc", botId, "to pid", pid)
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	err = stmt.Close()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
 }

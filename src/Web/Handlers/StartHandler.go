@@ -32,7 +32,7 @@ func HandleStartBotById(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	if id > 0 {
-		Helpers.StartBotFromId(user.ID, id)
+		defer Helpers.StartBotFromId(user.ID, id)
 		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 		return
 	}
