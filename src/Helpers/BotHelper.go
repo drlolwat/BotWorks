@@ -59,15 +59,20 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 			err := rows.Scan(&botId)
 			if err != nil {
 				fmt.Println(err)
+				return
 			}
 
-			StartBotFromId(userId, botId)
+			err = SetBotPidById(botId, StartBotFromId(userId, botId))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			time.Sleep(1)
 		}
 	}()
 }
 
-func StartBotFromId(userId int, pBotId int) bool {
+func StartBotFromId(userId int, pBotId int) int {
 	var config = Config.GetConfig()
 	var botId int
 	var botLoginName string
@@ -86,12 +91,14 @@ func StartBotFromId(userId int, pBotId int) bool {
 			"b.id,b.backend_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.id = ? AND a.customer_id = ?", pBotId, userId)
 	if err != nil {
 		fmt.Println(err)
+		return 0
 	}
 
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
 			fmt.Println(err)
+			return
 		}
 	}(rows)
 
@@ -99,6 +106,7 @@ func StartBotFromId(userId int, pBotId int) bool {
 		err := rows.Scan(&botId, &botLoginName, &botLoginPass, &botBankPin, &proxyId, &scriptId, &scriptParams, &botBreaks, &botFps, &scriptDbId, &scriptSdnName)
 		if err != nil {
 			fmt.Println(err)
+			return 0
 		}
 
 		var proxyUser string
@@ -147,17 +155,10 @@ func StartBotFromId(userId int, pBotId int) bool {
 		}
 
 		pid := command.Process.Pid
-		defer func(botId int, pid int) {
-			err := SetBotPidById(botId, pid)
-			if err != nil {
-
-			}
-		}(botId, pid)
-
-		return true
+		return pid
 	}
 
-	return false
+	return 0
 }
 
 func SetBotPidById(botId int, pid int) error {
