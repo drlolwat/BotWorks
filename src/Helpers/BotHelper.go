@@ -39,7 +39,11 @@ func KillBot(botId int, userId int) {
 		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
 		_ = cmd.Start()
 
-		SetBotPidById(botId, 0)
+		err := SetBotPidById(botId, 0)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 
 	return
@@ -169,11 +173,13 @@ func SetBotPidById(botId int, pid int) error {
 	}
 
 	res, err := stmt.Exec(pid, botId)
-	rows, err := res.RowsAffected()
 
-	if rows > 0 {
-		fmt.Println("updating acc", botId, "to pid", pid)
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
+
+	_, err = res.RowsAffected()
 
 	if err != nil {
 		fmt.Println(err)
