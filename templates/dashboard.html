@@ -171,7 +171,7 @@
                       {{ range .GroupData }}
                       <div class="tab-pane fade" id="card-9{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-9{{ .Id }}">
                           <p class="card-text">
-                              <a class='btn btn-primary btn-xs btn-success' href='stop/group/{{ .Id }}' role='button'>Start all instances in this group</a>
+                              <a class='btn btn-primary btn-xs btn-success' href='/start/group/{{ .Id }}' role='button'>Start all instances in this group</a>
                           <table width='100%' id="accountsTable-9{{ .Id }}" name="accountsTable-9{{ .Id }}" class="display">
                               <thead>
                               <tr>
@@ -189,7 +189,7 @@
                                   <td>{{ .Script }}</td>
                                   <td>{{ .Status }}</td>
                                   <td>
-                                      <a href="start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
+                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
                                       <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
                                   </td>
                               </tr>

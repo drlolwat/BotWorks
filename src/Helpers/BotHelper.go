@@ -6,7 +6,66 @@ import (
 	"database/sql"
 	"fmt"
 	"os/exec"
+	"strconv"
+	"time"
 )
+
+func GetPid(botId int) int {
+	var pid int
+
+	rows, _ := Storage.GetDb().Query("SELECT pid FROM accounts WHERE id = ?", botId)
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		err := rows.Scan(&pid)
+		if err != nil {
+			return 0
+		}
+	}
+
+	return pid
+}
+
+func KillBot(botId int, userId int) {
+	pid := GetPid(botId)
+
+	if pid > 0 {
+		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
+		_ = cmd.Start()
+
+		SetBotPidById(botId, 0)
+	}
+
+	return
+}
+
+func StartFromDbRows(rows *sql.Rows, userId int) {
+	go func() {
+		defer func(rows *sql.Rows) {
+			err := rows.Close()
+			if err != nil {
+
+			}
+		}(rows)
+
+		for rows.Next() {
+			var botId int
+			err := rows.Scan(&botId)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			StartBotFromId(userId, botId)
+			time.Sleep(1)
+		}
+	}()
+}
 
 func StartBotFromId(userId int, pBotId int) bool {
 	var config = Config.GetConfig()
@@ -27,20 +86,19 @@ func StartBotFromId(userId int, pBotId int) bool {
 			"b.id,b.backend_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.id = ? AND a.customer_id = ?", pBotId, userId)
 	if err != nil {
 		fmt.Println(err)
-		return false
 	}
 
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-
+			fmt.Println(err)
 		}
 	}(rows)
 
 	for rows.Next() {
 		err := rows.Scan(&botId, &botLoginName, &botLoginPass, &botBankPin, &proxyId, &scriptId, &scriptParams, &botBreaks, &botFps, &scriptDbId, &scriptSdnName)
 		if err != nil {
-			return false
+			fmt.Println(err)
 		}
 
 		var proxyUser string
@@ -53,20 +111,16 @@ func StartBotFromId(userId int, pBotId int) bool {
 			"-Xms256M",
 			"-Xmx4G",
 			config.DreambotJar,
-			"-fresh",
-			"-covert",
 			"-username",
-			"\"" + config.DreambotUsername + "\"",
+			config.DreambotUsername,
 			"-password",
-			"\"" + config.DreambotPassword + "\"",
+			config.DreambotPassword,
 			"-script",
-			"\"" + scriptSdnName + "\"",
+			scriptSdnName,
 			"-accountUsername",
-			"\"" + botLoginName + "\"",
+			botLoginName,
 			"-accountPassword",
-			"\"" + botLoginPass + "\"",
-			"-accountPin",
-			"\"" + botBankPin + "\"",
+			botLoginPass,
 		}
 
 		if proxyId > 0 {
@@ -75,28 +129,44 @@ func StartBotFromId(userId int, pBotId int) bool {
 			defer func(prox *sql.Rows) {
 				err := prox.Close()
 				if err != nil {
-					return
+					fmt.Println(err)
 				}
 			}(prox)
 
 			for prox.Next() {
 				_ = prox.Scan(&proxyIp, &proxyPort, &proxyUser, &proxyPass)
-				args = append(args, "-proxyHost", "\""+proxyIp+"\"", "-proxyPort", "\""+proxyPort+"\"", "-proxyUser", "\""+proxyUser+"\"", "-proxyPass", "\""+proxyPass+"\"")
+				args = append(args, "-proxyHost", proxyIp, "-proxyPort", proxyPort, "-proxyUser", proxyUser, "-proxyPass", proxyPass)
 			}
 		}
-		args = append(args, "-destroy", "-params", scriptParams)
-		fmt.Println(args)
 
-		command := exec.Command("java", args...)
-		if err := command.Start(); err != nil {
-			fmt.Println(err.Error())
-			return false
+		args = append(args, "-destroy", "-fresh", "-covert", scriptParams)
+		command := exec.Command("C:\\Program Files\\Java\\jre1.8.0_361\\bin\\javaw.exe", args...)
+		err = command.Start()
+		if err != nil {
+			fmt.Println(err)
 		}
 
-		fmt.Println(args)
+		pid := command.Process.Pid
+		SetBotPidById(pBotId, pid)
 
 		return true
 	}
 
 	return false
+}
+
+func SetBotPidById(botId int, pid int) {
+	stmt, err := Storage.GetDb().Prepare("UPDATE accounts SET pid = ? WHERE id = ?")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer func(stmt *sql.Stmt) {
+		err := stmt.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(stmt)
+
+	_, _ = stmt.Exec(pid, botId)
 }

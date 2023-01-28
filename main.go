@@ -25,6 +25,11 @@ func main() {
 	r.HandleFunc("/dashboard", Handlers.DashboardHandler)
 	r.HandleFunc("/logout", Handlers.LogoutHandler)
 	r.HandleFunc("/start/id/{id}", Handlers.HandleStartBotById)
+	r.HandleFunc("/start/group/{id}", Handlers.HandleStartBotsByGroup)
+	r.HandleFunc("/stop/id/{id}", Handlers.HandleStopBotById)
+	r.HandleFunc("/stop/group/{id}", Handlers.HandleStopBotByGroup)
+	r.HandleFunc("/start/all", Handlers.HandleStartAll)
+	r.HandleFunc("/stop/all", Handlers.HandleStopAll)
 
 	fs := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", fs))
