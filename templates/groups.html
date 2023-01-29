@@ -52,7 +52,7 @@
                         </div>
                         <div class="card-body">
                             <form method="post">
-                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" style="form-control" value="{{ .GroupData.Name }}"> group. <br /> <br />
+                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" class="form-control" value="{{ .GroupData.Name }}" style="width:100px;display:inline;"> group. <br /> <br />
                                 {{ if .AddingGroup }}
                                     <input type='submit' name='add' value='Add group' class='form-control' style="width:20%">
                                 {{ else if .EditingGroup }}

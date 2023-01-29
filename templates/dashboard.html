@@ -70,7 +70,23 @@
                                     <tr>
                                         <td>{{ .AccountName }}</td>
                                         <td>{{ .Script }}</td>
-                                        <td>{{ .Status }}</td>
+                                        <td>
+                                            {{ if eq .Status "BREAK" }}
+                                                <i style="color:green;">Breaking</i>,
+                                            {{ else if eq .Status "BOND"}}
+                                                <b style="color:red;">Needs Bond</b>,
+                                            {{ else if eq .Status "BANNED" }}
+                                                <u><b style="color:red;">Banned</b></u>,
+                                            {{ else if eq .Status "ACTIVE" }}
+                                                <span style="color:green">Active</span>,
+                                            {{ end }}
+
+                                            {{ if gt .ProxyId 0 }}
+                                                <span style="color:green">Proxied</span>
+                                            {{ else }}
+                                                <span style="color:red">Not Proxied</span>
+                                            {{ end }}
+                                        </td>
                                         <td>
                                             <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
                                             <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
@@ -100,7 +116,23 @@
                                     <tr>
                                         <td>{{ .AccountName }}</td>
                                         <td>{{ .Script }}</td>
-                                        <td>{{ .Status }}</td>
+                                        <td>
+                                            {{ if eq .Status "BREAK" }}
+                                                <i style="color:green;">Breaking</i>,
+                                            {{ else if eq .Status "BOND"}}
+                                                <b style="color:red;">Needs Bond</b>,
+                                            {{ else if eq .Status "BANNED" }}
+                                                <u><b style="color:red;">Banned</b></u>,
+                                            {{ else if eq .Status "ACTIVE" }}
+                                                <span style="color:green">Active</span>,
+                                            {{ end }}
+
+                                            {{ if gt .ProxyId 0 }}
+                                                <span style="color:green">Proxied</span>
+                                            {{ else }}
+                                                <span style="color:red">Not Proxied</span>
+                                            {{ end }}
+                                        </td>
                                         <td>
                                             <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
                                             <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
@@ -157,7 +189,7 @@
                                   <td>{{ .Script }}</td>
                                   <td>
                                       <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
-                                      <a href="/accounts/edit/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
+                                      <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
                                   </td>
                               </tr>
                               {{ end }}

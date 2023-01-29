@@ -31,6 +31,7 @@ func main() {
 	r.HandleFunc("/proxies", Handlers.ProxyHandler)
 	r.HandleFunc("/groups", Handlers.GroupsHandler)
 	r.HandleFunc("/schedules", Handlers.SchedulesHandler)
+	r.HandleFunc("/system", Handlers.SystemConfigHandler)
 
 	// pages that are essentially actions and redirects
 	r.HandleFunc("/logout", Actions.LogoutAction)

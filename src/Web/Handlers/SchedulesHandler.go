@@ -35,7 +35,6 @@ func SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 		Url:      "schedules",
 	}
 
-	fmt.Println(r.PostForm)
 	if r.PostForm.Has("update") || r.PostForm.Has("add") {
 		if r.FormValue("name") != "" && r.FormValue("start_hour") != "" && r.FormValue("start_min") != "" &&
 			r.FormValue("end_hour") != "" && r.FormValue("end_min") != "" {

@@ -6,11 +6,12 @@ import (
 	"BotWorks/src/Structs"
 	"database/sql"
 	"fmt"
+	"os"
 	"os/exec"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -217,8 +218,14 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			}
 		}
 
-		args = append(args, "-destroy", "-fresh", "-covert", scriptParams)
-		command := exec.Command("C:\\Program Files\\Java\\jre1.8.0_361\\bin\\javaw.exe", args...)
+		if strings.Contains(strings.ToLower(scriptSdnName), "f2p") {
+			args = append(args, "-world", "f2p")
+		} else if strings.Contains(strings.ToLower(scriptSdnName), "mule") {
+			args = append(args, "-world", "308")
+		}
+
+		args = append(args, "-destroy", "-fresh", "-covert", "-params", scriptParams)
+		command := exec.Command("javaw", args...)
 		err = command.Start()
 		if err != nil {
 			fmt.Println(err)
@@ -232,24 +239,34 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 	return 0, ""
 }
 
-func IsBotRunning(pid int) bool {
-	var command string
-	var output []byte
-	var err error
-
-	if runtime.GOOS == "windows" {
-		command = fmt.Sprintf("tasklist /FI \"PID eq %d\"", pid)
-		output, err = exec.Command("cmd", "/C", command).Output()
-	} else {
-		command = fmt.Sprintf("ps %d", pid)
-		output, err = exec.Command("sh", "-c", command).Output()
+func IsBotRunningLinux(pid int) bool {
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		fmt.Printf("Error finding process: %v\n", err)
+		return false
 	}
+	err = process.Signal(syscall.Signal(0))
+	if err != nil {
+		fmt.Printf("Error sending signal: %v\n", err)
+		return false
+	}
+	return true
+}
 
+func IsBotRunning(pid int) bool {
+	handle, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, false, uint32(pid))
+	if err != nil {
+		return false
+	}
+	defer syscall.CloseHandle(handle)
+
+	var exitCode uint32
+	err = syscall.GetExitCodeProcess(handle, &exitCode)
 	if err != nil {
 		return false
 	}
 
-	return !strings.Contains(strings.ToLower(string(output)), "no tasks")
+	return exitCode == 259
 }
 
 func SetBotPidById(botId int, pid int, logFile string) error {

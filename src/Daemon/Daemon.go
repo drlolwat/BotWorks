@@ -49,6 +49,9 @@ func Begin() {
 						continue
 					}
 					botsUndetected++
+					continue
+				} else {
+					botsDetected++
 				}
 			}
 
@@ -78,6 +81,7 @@ func Begin() {
 					continue
 				}
 			}
+
 		}
 
 		_ = rows.Close()
