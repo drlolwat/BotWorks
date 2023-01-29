@@ -28,6 +28,8 @@ func main() {
 	r.HandleFunc("/dashboard", Handlers.DashboardHandler)
 	r.HandleFunc("/accounts", Handlers.AccountsHandler)
 	r.HandleFunc("/proxies", Handlers.ProxyHandler)
+	r.HandleFunc("/groups", Handlers.GroupsHandler)
+	r.HandleFunc("/schedules", Handlers.SchedulesHandler)
 
 	// pages that are essentially actions and redirects
 	r.HandleFunc("/logout", Actions.LogoutAction)
@@ -43,13 +45,23 @@ func main() {
 
 	// begin routine for web serving
 	go func() {
-		err := http.ListenAndServe(":8080", r)
+		err := http.ListenAndServe(":80", r)
 		if err != nil {
 			println(err)
 		}
 	}()
 
-	println("BotWorks is now running on port 8080.")
+	println("  ____        _     ____            _     _       ")
+	println(" |  _ \\      | |   |  _ \\          | |   | |      ")
+	println(" | |_) | ___ | |_  | |_) |_   _  __| | __| |_   _ ")
+	println(" |  _ < / _ \\| __| |  _ <| | | |/ _` |/ _` | | | |")
+	println(" | |_) | (_) | |_  | |_) | |_| | (_| | (_| | |_| |")
+	println(" |____/ \\___/ \\__| |____/ \\__,_|\\__,_|\\__,_|\\__, |")
+	println("                                             __/ |")
+	println("   Version v2.0, by lolwat                   |___/ ")
+	println()
+	println()
+	println("Server is now listening on port 80")
 
 	// Keep this bitch going forever and ever, perhaps implement commands
 	for true {

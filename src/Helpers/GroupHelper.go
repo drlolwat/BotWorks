@@ -8,7 +8,6 @@ import (
 )
 
 func GetGroups(customerId int) []Structs.GroupData {
-
 	botsOnline, botsOffline, _ := GetBotsByCustomerId(customerId)
 	rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id= ?", customerId)
 
@@ -35,11 +34,24 @@ func GetGroups(customerId int) []Structs.GroupData {
 			return nil
 		}
 
+		var myBots []Structs.DashboardBotData
+		for _, bots := range botsOnline {
+			if bots.GroupId == id {
+				myBots = append(myBots, bots)
+			}
+		}
+		for _, bots := range botsOffline {
+			if bots.GroupId == id {
+				myBots = append(myBots, bots)
+			}
+		}
+
 		allGroups = append(allGroups, Structs.GroupData{
 			Id:          id,
 			Name:        name,
 			BotsOnline:  botsOnline,
 			BotsOffline: botsOffline,
+			BotsCount:   len(myBots),
 		})
 	}
 

@@ -1,0 +1,89 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        <a class='btn btn-primary btn-xs btn-success' href='/groups?a=t' role='button'>New Group</a>
+                    </div>
+
+                    <div class="card-body">
+                        <table width="100%" id="groups" name="groups" class="display">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range .Groups }}
+                                <tr>
+                                    <td>
+                                        {{ .Name }} ({{ .BotsCount }})
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/groups?e={{ .Id }}">E</a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/groups?d={{ .Id }}">D</a>
+                                    </td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    {{ if or .AddingGroup .EditingGroup }}
+                        <div class="card-header">
+                            Group Manager
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" style="form-control" value="{{ .GroupData.Name }}"> group. <br /> <br />
+                                {{ if .AddingGroup }}
+                                    <input type='submit' name='add' value='Add group' class='form-control' style="width:20%">
+                                {{ else if .EditingGroup }}
+                                    <input type='submit' name='update' value='Modify group' class='form-control' style="width:20%">
+                                    <input type='hidden' name='id' value='{{ .GroupData.Id }}'>
+                                {{ end }}
+                            </form>
+                        </div>
+                    {{ else }}
+                        <div class="card-header">
+                            Select or create a group on the left to get started.
+                        </div>
+                        <div class="card-body">
+
+                        </div>
+                    {{ end }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#groups').DataTable({
+            scrollCollapse: true,
+            paging: false,
+            scrollX: true,
+            scrollY: true,
+            searching: true,
+        });
+    });
+</script>

@@ -20,7 +20,7 @@ func StartBotByIdAction(w http.ResponseWriter, r *http.Request) {
 	session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 	userID := session.Values[Sessions.UserIDKey]
 	if userID != nil {
-		user.ID = userID.(int)
+		user.Id = userID.(int)
 	} else {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
@@ -30,7 +30,7 @@ func StartBotByIdAction(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	if id > 0 {
-		botPid, logFile := Helpers.StartBotFromId(user.ID, id)
+		botPid, logFile := Helpers.StartBotFromId(user.Id, id)
 		err := Helpers.SetBotPidById(id, botPid, logFile)
 		if err != nil {
 			fmt.Println(err)

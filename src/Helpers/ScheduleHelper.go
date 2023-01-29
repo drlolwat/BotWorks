@@ -44,8 +44,38 @@ func GetSchedules(customerId int) []Structs.ScheduleData {
 			StartMinute: startm,
 			EndHour:     endh,
 			EndMinute:   endm,
+			TotalUsers:  GetScheduleUsers(id),
 		})
 	}
 
 	return allSchedules
+}
+
+func GetScheduleUsers(scheduleId int) int {
+	rows, err := Storage.GetDb().Query("SELECT count(id) FROM accounts WHERE schedule = ?", scheduleId)
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(rows)
+
+	for rows.Next() {
+		var count int
+		err := rows.Scan(&count)
+		if err != nil {
+			fmt.Println(err)
+			return 0
+		}
+
+		return count
+	}
+
+	return 0
 }

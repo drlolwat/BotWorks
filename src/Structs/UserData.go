@@ -1,7 +1,7 @@
 package Structs
 
 type UserData struct {
-	ID       int
+	Id       int
 	Handle   string
 	Password string
 }

@@ -21,14 +21,14 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 	userID := session.Values[Sessions.UserIDKey]
 	if userID != nil {
-		user.ID = userID.(int)
+		user.Id = userID.(int)
 	} else {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
 	}
 
 	// fetch my bots
-	runningBotData, offlineBotData, uniqueScripts := Helpers.GetBotsByCustomerId(user.ID)
+	runningBotData, offlineBotData, uniqueScripts := Helpers.GetBotsByCustomerId(user.Id)
 
 	var allBots []Structs.DashboardBotData
 	var groups []Structs.GroupData
@@ -37,7 +37,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	allBots = append(allBots, offlineBotData...)
 
 	// fetch my groups
-	rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id = ?", user.ID)
+	rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id = ?", user.Id)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -88,7 +88,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var headerInfo = Structs.PageData{
-		LoggedIn: user.ID > 0,
+		LoggedIn: user.Id > 0,
 		Name:     "Dashboard",
 		Url:      "dashboard",
 	}

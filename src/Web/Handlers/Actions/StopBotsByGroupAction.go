@@ -21,7 +21,7 @@ func StopBotByGroupAction(w http.ResponseWriter, r *http.Request) {
 	session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 	userID := session.Values[Sessions.UserIDKey]
 	if userID != nil {
-		user.ID = userID.(int)
+		user.Id = userID.(int)
 	} else {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
@@ -31,7 +31,7 @@ func StopBotByGroupAction(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	if id > 0 {
-		rows, err := Storage.GetDb().Query("SELECT id FROM accounts WHERE group_id = ? AND customer_id = ? AND pid > 0", id, user.ID)
+		rows, err := Storage.GetDb().Query("SELECT id FROM accounts WHERE group_id = ? AND customer_id = ? AND pid > 0", id, user.Id)
 		if err != nil {
 			return
 		}
@@ -46,7 +46,7 @@ func StopBotByGroupAction(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var botId int
 			rows.Scan(&botId)
-			Helpers.KillBot(botId, user.ID)
+			Helpers.KillBot(botId, user.Id)
 		}
 
 		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)

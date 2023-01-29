@@ -23,14 +23,14 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 	userID := session.Values[Sessions.UserIDKey]
 	if userID != nil {
-		user.ID = userID.(int)
+		user.Id = userID.(int)
 	} else {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
 	}
 
 	var headerInfo = Structs.PageData{
-		LoggedIn: user.ID > 0,
+		LoggedIn: user.Id > 0,
 		Name:     "Accounts",
 		Url:      "accounts",
 	}
@@ -54,7 +54,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 
 			if r.PostForm.Has("update") && r.FormValue("account_id") != "" {
 				id = r.FormValue("account_id")
-				_, err := Storage.GetDb().Exec("UPDATE accounts SET name = ?, password = ?, bank_pin = ?, proxy_id = ?, script_id = ?, script_params = ?, schedule = ?, group_id = ?, breaks = ?, fps = ? WHERE id = ? AND customer_id=?", username, password, pin, proxy, script, params, sched, grp, breaks, fps, id, user.ID)
+				_, err := Storage.GetDb().Exec("UPDATE accounts SET name = ?, password = ?, bank_pin = ?, proxy_id = ?, script_id = ?, script_params = ?, schedule = ?, group_id = ?, breaks = ?, fps = ? WHERE id = ? AND customer_id=?", username, password, pin, proxy, script, params, sched, grp, breaks, fps, id, user.Id)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -63,7 +63,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 
 			if r.PostForm.Has("add") {
 				fmt.Println("hey")
-				_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, proxy, script, params, user.ID, "", 0, grp, breaks, sched, fps)
+				_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, proxy, script, params, user.Id, "", 0, grp, breaks, sched, fps)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -73,13 +73,13 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("d") {
-		_, err := Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("d"), user.ID)
+		_, err := Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("d"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 
-	runningBotData, offlineBotData, _ := Helpers.GetBotsByCustomerId(user.ID)
+	runningBotData, offlineBotData, _ := Helpers.GetBotsByCustomerId(user.Id)
 
 	var allBots []Structs.DashboardBotData
 	allBots = append(allBots, runningBotData...)
@@ -91,13 +91,13 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 		"EditingAccount": r.URL.Query().Get("e"),
 		"DeletingBot":    r.URL.Query().Get("d"),
 		"Scripts":        Helpers.GetScripts(),
-		"Proxies":        Helpers.GetProxies(user.ID),
-		"Schedules":      Helpers.GetSchedules(user.ID),
-		"Groups":         Helpers.GetGroups(user.ID),
+		"Proxies":        Helpers.GetProxies(user.Id),
+		"Schedules":      Helpers.GetSchedules(user.Id),
+		"Groups":         Helpers.GetGroups(user.Id),
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,name,password,bank_pin,script_params,breaks,fps,script_id,proxy_id,schedule,group_id FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.ID)
+		rows, err := Storage.GetDb().Query("SELECT id,name,password,bank_pin,script_params,breaks,fps,script_id,proxy_id,schedule,group_id FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 			return

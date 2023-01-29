@@ -5,4 +5,5 @@ type GroupData struct {
 	Name        string
 	BotsOnline  []DashboardBotData
 	BotsOffline []DashboardBotData
+	BotsCount   int
 }

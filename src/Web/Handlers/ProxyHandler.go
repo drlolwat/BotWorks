@@ -23,14 +23,14 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 	userID := session.Values[Sessions.UserIDKey]
 	if userID != nil {
-		user.ID = userID.(int)
+		user.Id = userID.(int)
 	} else {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
 	}
 
 	var headerInfo = Structs.PageData{
-		LoggedIn: user.ID > 0,
+		LoggedIn: user.Id > 0,
 		Name:     "Proxies",
 		Url:      "proxies",
 	}
@@ -47,7 +47,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 			if r.PostForm.Has("update") && r.FormValue("proxy_id") != "" {
 				proxyid := r.FormValue("proxy_id")
-				_, err := Storage.GetDb().Exec("UPDATE proxies SET ip = ?, port = ?, username = ?, password = ?, nickname = ? WHERE id = ? AND customer_id = ?", ip, port, username, password, nickname, proxyid, user.ID)
+				_, err := Storage.GetDb().Exec("UPDATE proxies SET ip = ?, port = ?, username = ?, password = ?, nickname = ? WHERE id = ? AND customer_id = ?", ip, port, username, password, nickname, proxyid, user.Id)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -55,7 +55,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostForm.Has("add") {
-				_, err := Storage.GetDb().Exec("INSERT INTO proxies (ip, port, username, password, nickname, customer_id) VALUES (?, ?, ?, ?, ?, ?)", ip, port, username, password, nickname, user.ID)
+				_, err := Storage.GetDb().Exec("INSERT INTO proxies (ip, port, username, password, nickname, customer_id) VALUES (?, ?, ?, ?, ?, ?)", ip, port, username, password, nickname, user.Id)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -65,15 +65,17 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("d") {
-		_, err := Storage.GetDb().Exec("DELETE FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("d"), user.ID)
+		_, err := Storage.GetDb().Exec("DELETE FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("d"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+
+		_, err = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = 0 WHERE proxy_id = ? AND customer_id = ?", r.URL.Query().Get("d"), user.Id)
 	}
 
 	proxyPageData := map[string]interface{}{
-		"Proxies":       Helpers.GetProxies(user.ID),
+		"Proxies":       Helpers.GetProxies(user.Id),
 		"AddingProxy":   r.URL.Query().Get("a"),
 		"EditingProxy":  r.URL.Query().Get("e"),
 		"DeletingProxy": r.URL.Query().Get("d"),
@@ -81,7 +83,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,ip,port,username,password,nickname FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.ID)
+		rows, err := Storage.GetDb().Query("SELECT id,ip,port,username,password,nickname FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -138,7 +140,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = Template.GetTpl().ExecuteTemplate(w, "proxies.html", proxyPageData)
 	if err != nil {
-		println("failed to execute tpl: accounts")
+		println("failed to execute tpl: proxies")
 	}
 
 	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_footer.html", nil)

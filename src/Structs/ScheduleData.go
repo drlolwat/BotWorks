@@ -7,4 +7,5 @@ type ScheduleData struct {
 	StartMinute int
 	EndHour     int
 	EndMinute   int
+	TotalUsers  int
 }

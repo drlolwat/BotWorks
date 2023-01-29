@@ -46,9 +46,10 @@
 
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
                 <div class="card">
-                    <div class="card-header">
                         {{ if or .AddingProxy .EditingProxy }}
-                            Proxy Manager
+                            <div class="card-header">
+                                    Proxy Manager
+                            </div>
                             <div class="card-body">
                                 <form method="post">
                                     <table width="75%">
@@ -88,7 +89,12 @@
                                 </form>
                             </div>
                         {{ else }}
-                            Select or create a proxy on the left to get started.
+                            <div class="card-header">
+                                Select or create a proxy on the left to get started.
+                            </div>
+                            <div class="card-body">
+
+                            </div>
                         {{ end }}
                     </div>
 

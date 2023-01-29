@@ -27,7 +27,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(username) > 0 && len(password) > 0 {
 			var user Structs.UserData
-			if err := Storage.GetDb().QueryRow("SELECT id, handle, password FROM customers WHERE handle = ?", username).Scan(&user.ID, &user.Handle, &user.Password); err != nil {
+			if err := Storage.GetDb().QueryRow("SELECT id, handle, password FROM customers WHERE handle = ?", username).Scan(&user.Id, &user.Handle, &user.Password); err != nil {
 				println("login failed for user: " + username)
 				http.Redirect(w, r, "/", http.StatusFound)
 				return
@@ -41,7 +41,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			session, _ := Sessions.Store.Get(r, Sessions.SessionName)
-			session.Values[Sessions.UserIDKey] = user.ID
+			session.Values[Sessions.UserIDKey] = user.Id
 			session.Save(r, w)
 
 			println("login was a success for user: " + username)

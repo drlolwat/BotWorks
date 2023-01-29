@@ -2,3 +2,8 @@
 /bin/go_build_BotWorks.exe
 /.idea/
 /Botworks.db
+/BotBuddy.db
+/Botworks.db-shm
+/Botworks.db-wal
+/BotBuddy.db-wal
+/BotBuddy.db-shm
