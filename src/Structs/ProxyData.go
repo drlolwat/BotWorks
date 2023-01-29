@@ -4,7 +4,8 @@ type ProxyData struct {
 	Id        int
 	Name      string
 	IpAddress string
-	Port      int
+	Port      string
 	Username  string
 	Password  string
+	Accounts  int
 }

@@ -30,7 +30,10 @@
                                 {{ range .Bots }}
                                     <tr>
                                         <td>{{ .AccountName }}</td>
-                                        <td>asd</td>
+                                        <td>
+                                            <a class='btn btn-primary btn-xs btn-info' href="/accounts?e={{ .AccountId }}">E</a>
+                                            <a class='btn btn-primary btn-xs btn-danger' href="/accounts?d={{ .AccountId }}">D</a>
+                                        </td>
                                     </tr>
                                 {{ end }}
                             </tbody>
@@ -50,35 +53,36 @@
                                 <table width="96%">
                                     <tr>
                                         <td>Login username/email</td>
-                                        <td><input type='text' name='name'  class='form-control' required></td>
+                                        <td><input type='text' name='name' value="{{ .BotData.Name }}" class='form-control' required></td>
                                     </tr>
                                     <tr>
                                         <td>Login password</td>
-                                        <td><input type='text' name='password'  class='form-control' required></td>
+                                        <td><input type='text' name='password' value="{{ .BotData.Pass }}"  class='form-control' required></td>
                                     </tr>
                                     <tr>
                                         <td>Bank pin (enter -1 if none)</td>
-                                        <td><input type='number' name='bank_pin'  class='form-control' required></td>
+                                        <td><input type='number' name='bank_pin' value="{{ .BotData.Pin }}" class='form-control' required></td>
                                     </tr>
                                     <tr>
                                         <td>Parameters</td>
-                                        <td><input type='text' name='params'  class='form-control'></td>
+                                        <td><input type='text' name='params' value="{{ .BotData.Params }}" class='form-control'></td>
                                     </tr>
                                     <tr>
                                         <td>Dreambot Breaks (comma separated)</td>
-                                        <td><input type='text' name='breaks'  class='form-control'></td>
+                                        <td><input type='text' name='breaks' value="{{ .BotData.Breaks }}" class='form-control'></td>
                                     </tr>
                                     <tr>
                                         <td>Dreambot FPS</td>
-                                        <td><input type='number' name='fps'  class='form-control'></td>
+                                        <td><input type='number' name='fps' value="{{ .BotData.Fps }}" class='form-control'></td>
                                     </tr>
+                                    {{ $botData := .BotData }}
                                     <tr>
                                         <td>Initial Script</td>
                                         <td>
                                             <select name='script_id' class='form-control' required>
                                                 <option value="-1">No Script</option>
                                                 {{ range .Scripts }}
-                                                    <option value="{{ .Id }}">{{ .PublicName }}</option>
+                                                    <option value="{{ .Id }}"{{ if eq .Id $botData.ScriptId }} selected{{ end }}>{{ .PublicName }}</option>
                                                 {{ end }}
                                             </select>
                                         </td>
@@ -89,7 +93,7 @@
                                             <select name='proxy_id' class='form-control' required>
                                                 <option value="-1">No Proxy</option>
                                                 {{ range .Proxies }}
-                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                    <option value="{{ .Id }}"{{ if eq .Id $botData.ProxyId }} selected{{ end }}>{{ .Name }} ({{ .Accounts }})</option>
                                                 {{ end }}
                                             </select>
                                         </td>
@@ -100,7 +104,7 @@
                                             <select name='schedule_id' class='form-control' required>
                                                 <option value="-1">No Schedule</option>
                                                 {{ range .Schedules }}
-                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                    <option value="{{ .Id }}"{{if eq .Id $botData.ScheduleId }} selected{{ end }}>{{ .Name }}</option>
                                                 {{ end }}
                                             </select>
                                         </td>
@@ -111,7 +115,7 @@
                                             <select name='group_id' class='form-control' required>
                                                 <option value="-1">No Group</option>
                                                 {{ range .Groups }}
-                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                    <option value="{{ .Id }}"{{ if eq .Id $botData.GroupId }} selected {{ end }}>{{ .Name }}</option>
                                                 {{ end }}
                                             </select>
                                         </td>
@@ -120,9 +124,10 @@
                                         <td></td>
                                         <td>
                                             {{ if .AddingAccount }}
-                                            <input type='submit' name='addAccount' value='Add account' class='form-control'>
+                                                <input type='submit' name='add' value='Add account' class='form-control'>
                                             {{ else if .EditingAccount }}
-                                            <input type='submit' name='editAccount' value='Modify account' class='form-control'>
+                                                <input type='submit' name='update' value='Modify account' class='form-control'>
+                                                <input type="hidden" name="account_id" value="{{ .EditingAccount }}" class="form-control">
                                             {{ end }}
                                         </td>
                                     </tr>

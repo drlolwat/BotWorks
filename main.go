@@ -27,6 +27,7 @@ func main() {
 	r.HandleFunc("/", Handlers.IndexHandler)
 	r.HandleFunc("/dashboard", Handlers.DashboardHandler)
 	r.HandleFunc("/accounts", Handlers.AccountsHandler)
+	r.HandleFunc("/proxies", Handlers.ProxyHandler)
 
 	// pages that are essentially actions and redirects
 	r.HandleFunc("/logout", Actions.LogoutAction)

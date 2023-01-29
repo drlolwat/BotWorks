@@ -7,6 +7,31 @@ import (
 	"fmt"
 )
 
+func NumAccountsUsing(proxyId int) int {
+	id := 0
+	rows, err := Storage.GetDb().Query("SELECT count(id) AS num FROM accounts WHERE proxy_id = ?", proxyId)
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			return 0
+		}
+	}
+
+	return id
+}
+
 func GetProxies(customerId int) []Structs.ProxyData {
 	rows, err := Storage.GetDb().Query("SELECT id,ip,port,username,password,nickname FROM proxies WHERE customer_id= ?", customerId)
 
@@ -28,7 +53,7 @@ func GetProxies(customerId int) []Structs.ProxyData {
 		var id int
 		var name string
 		var ip string
-		var port int
+		var port string
 		var username string
 		var password string
 
@@ -44,6 +69,7 @@ func GetProxies(customerId int) []Structs.ProxyData {
 			Port:      port,
 			Username:  username,
 			Password:  password,
+			Accounts:  NumAccountsUsing(id),
 		})
 	}
 

@@ -261,14 +261,14 @@ func SetBotPidById(botId int, pid int, logFile string) error {
 	return nil
 }
 
-func GetBotsByCustomerId(userId int) ([]Structs.BotData, []Structs.BotData, int) {
-	var runningBotData []Structs.BotData
-	var offlineBotData []Structs.BotData
+func GetBotsByCustomerId(userId int) ([]Structs.DashboardBotData, []Structs.DashboardBotData, int) {
+	var runningBotData []Structs.DashboardBotData
+	var offlineBotData []Structs.DashboardBotData
 
 	rows, err := Storage.GetDb().Query("SELECT a.id,a.name,a.proxy_id,a.script_id,a.pid,a.group_id,a.fps,b.name AS script_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.customer_id = ?", userId)
 	if err != nil {
 		fmt.Println(err)
-		return []Structs.BotData{}, []Structs.BotData{}, 0
+		return []Structs.DashboardBotData{}, []Structs.DashboardBotData{}, 0
 	}
 
 	defer func(rows *sql.Rows) {
@@ -296,14 +296,13 @@ func GetBotsByCustomerId(userId int) ([]Structs.BotData, []Structs.BotData, int)
 		err = rows.Scan(&accountId, &name, &proxyId, &scriptId, &pid, &groupId, &fps, &scriptName)
 		if err != nil {
 			fmt.Println(err)
-			return []Structs.BotData{}, []Structs.BotData{}, 0
-		}
-
-		if !ContainsInt(scriptId, scripts) {
-			scripts = append(scripts, scriptId)
+			return []Structs.DashboardBotData{}, []Structs.DashboardBotData{}, 0
 		}
 
 		if pid > 0 {
+			if !ContainsInt(scriptId, scripts) {
+				scripts = append(scripts, scriptId)
+			}
 			runningBots++
 		} else {
 			stoppedBots++
@@ -312,7 +311,7 @@ func GetBotsByCustomerId(userId int) ([]Structs.BotData, []Structs.BotData, int)
 		//TODO status comes from the logfile
 		status = GetBotStatus(accountId)
 
-		var botData = Structs.BotData{
+		var botData = Structs.DashboardBotData{
 			AccountId:   accountId,
 			AccountName: name,
 			Script:      scriptName,

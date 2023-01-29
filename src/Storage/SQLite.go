@@ -1,6 +1,9 @@
 package Storage
 
-import "database/sql"
+import (
+	"database/sql"
+	"strings"
+)
 
 var (
 	db *sql.DB
@@ -17,6 +20,16 @@ func Init() {
 	if err != nil {
 		println(err)
 	}
+}
+
+func SanitizeInput(input string) string {
+	// Remove any semicolons or single quotes from the input
+	input = strings.Replace(input, ";", "", -1)
+	input = strings.Replace(input, "'", "", -1)
+	input = strings.Replace(input, "\"", "\"", -1)
+
+	// Return the sanitized input
+	return input
 }
 
 func GetDb() *sql.DB {

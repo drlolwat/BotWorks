@@ -30,15 +30,11 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	// fetch my bots
 	runningBotData, offlineBotData, uniqueScripts := Helpers.GetBotsByCustomerId(user.ID)
 
-	var allBots []Structs.BotData
+	var allBots []Structs.DashboardBotData
+	var groups []Structs.GroupData
+
 	allBots = append(allBots, runningBotData...)
 	allBots = append(allBots, offlineBotData...)
-
-	if uniqueScripts >= 2 {
-		uniqueScripts -= 1 // y tho
-	}
-
-	var groups []Structs.GroupData
 
 	// fetch my groups
 	rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id = ?", user.ID)
@@ -58,8 +54,8 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 		var groupId int
 		var groupName string
 		var groupData = Structs.GroupData{}
-		var groupRunningBotData []Structs.BotData
-		var groupOfflineBotData []Structs.BotData
+		var groupRunningBotData []Structs.DashboardBotData
+		var groupOfflineBotData []Structs.DashboardBotData
 
 		err = rows.Scan(&groupId, &groupName)
 		if err != nil {

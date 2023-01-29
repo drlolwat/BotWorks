@@ -1,12 +1,15 @@
 package Structs
 
 type BotData struct {
-	AccountId   int
-	AccountName string
-	Script      string
-	Status      string
-	Pid         int
-	GroupId     int
-	ProxyId     int
-	Fps         int
+	Id         int
+	Name       string
+	Pass       string
+	Pin        int
+	Params     string
+	Breaks     string
+	Fps        string
+	ScriptId   int
+	ProxyId    int
+	ScheduleId int
+	GroupId    int
 }
