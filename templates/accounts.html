@@ -1,0 +1,155 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        <a class='btn btn-primary btn-xs btn-success' href='/accounts?a=t' role='button'>New Bot</a>
+                    </div>
+
+                    <div class="card-body">
+                        <table width="100%" id="accounts" name="accounts" class="display">
+                            <thead>
+                            <tr>
+                                <th>Account name</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {{ range .Bots }}
+                                    <tr>
+                                        <td>{{ .AccountName }}</td>
+                                        <td>asd</td>
+                                    </tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    {{ if or .AddingAccount .EditingAccount }}
+                        <div class="card-header">
+                            Account Manager
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                <table width="96%">
+                                    <tr>
+                                        <td>Login username/email</td>
+                                        <td><input type='text' name='name'  class='form-control' required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Login password</td>
+                                        <td><input type='text' name='password'  class='form-control' required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bank pin (enter -1 if none)</td>
+                                        <td><input type='number' name='bank_pin'  class='form-control' required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Parameters</td>
+                                        <td><input type='text' name='params'  class='form-control'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dreambot Breaks (comma separated)</td>
+                                        <td><input type='text' name='breaks'  class='form-control'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dreambot FPS</td>
+                                        <td><input type='number' name='fps'  class='form-control'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Initial Script</td>
+                                        <td>
+                                            <select name='script_id' class='form-control' required>
+                                                <option value="-1">No Script</option>
+                                                {{ range .Scripts }}
+                                                    <option value="{{ .Id }}">{{ .PublicName }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Proxy</td>
+                                        <td>
+                                            <select name='proxy_id' class='form-control' required>
+                                                <option value="-1">No Proxy</option>
+                                                {{ range .Proxies }}
+                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Schedule</td>
+                                        <td>
+                                            <select name='schedule_id' class='form-control' required>
+                                                <option value="-1">No Schedule</option>
+                                                {{ range .Schedules }}
+                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Group</td>
+                                        <td>
+                                            <select name='group_id' class='form-control' required>
+                                                <option value="-1">No Group</option>
+                                                {{ range .Groups }}
+                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            {{ if .AddingAccount }}
+                                            <input type='submit' name='addAccount' value='Add account' class='form-control'>
+                                            {{ else if .EditingAccount }}
+                                            <input type='submit' name='editAccount' value='Modify account' class='form-control'>
+                                            {{ end }}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    {{ else }}
+                        <div class="card-header">
+                            Select or create a bot on the left to get started. <br />
+                        </div>
+                        <div class="card-body">
+
+                        </div>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#accounts').DataTable({
+                scrollCollapse: true,
+                paging: false,
+                scrollX: true,
+                scrollY: true,
+                searching: true,
+            });
+        });
+    </script>

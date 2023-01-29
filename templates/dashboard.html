@@ -147,7 +147,6 @@
                               <tr>
                                   <th>Account</td>
                                   <th>Script</td>
-                                  <th>Status</td>
                                   <th>Options</td>
                               </tr>
                               </thead>
@@ -156,10 +155,9 @@
                               <tr>
                                   <td>{{ .AccountName }}</td>
                                   <td>{{ .Script }}</td>
-                                  <td>{{ .Status }}</td>
                                   <td>
                                       <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
-                                      <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                      <a href="/accounts/edit/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
                                   </td>
                               </tr>
                               {{ end }}
@@ -177,7 +175,6 @@
                               <tr>
                                   <th>Account</th>
                                   <th>Script</th>
-                                  <th>Status</th>
                                   <th>Options</th>
                               </tr>
                               </thead>
@@ -187,10 +184,9 @@
                               <tr>
                                   <td>{{ .AccountName }}</td>
                                   <td>{{ .Script }}</td>
-                                  <td>{{ .Status }}</td>
                                   <td>
                                       <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
-                                      <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                      <a href="/accounts/edit/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
                                   </td>
                               </tr>
                               {{ end }}

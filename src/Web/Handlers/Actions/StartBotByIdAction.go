@@ -1,19 +1,18 @@
-package Handlers
+package Actions
 
 import (
 	"BotWorks/src/Helpers"
-	"BotWorks/src/Storage"
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
-	"database/sql"
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 )
 
-func HandleStopBotByGroup(w http.ResponseWriter, r *http.Request) {
+func StartBotByIdAction(w http.ResponseWriter, r *http.Request) {
 	if !Helpers.IsSessionValid(r) {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 
@@ -31,24 +30,13 @@ func HandleStopBotByGroup(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	if id > 0 {
-		rows, err := Storage.GetDb().Query("SELECT id FROM accounts WHERE group_id = ? AND customer_id = ? AND pid > 0", id, user.ID)
+		botPid, logFile := Helpers.StartBotFromId(user.ID, id)
+		err := Helpers.SetBotPidById(id, botPid, logFile)
 		if err != nil {
+			fmt.Println(err)
+			http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 			return
 		}
-
-		defer func(rows *sql.Rows) {
-			err := rows.Close()
-			if err != nil {
-
-			}
-		}(rows)
-
-		for rows.Next() {
-			var botId int
-			rows.Scan(&botId)
-			Helpers.KillBot(botId, user.ID)
-		}
-
 		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 		return
 	}

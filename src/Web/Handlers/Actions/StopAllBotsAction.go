@@ -1,4 +1,4 @@
-package Handlers
+package Actions
 
 import (
 	"BotWorks/src/Helpers"
@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func HandleStopAll(w http.ResponseWriter, r *http.Request) {
+func StopAllBotsAction(w http.ResponseWriter, r *http.Request) {
 	if !Helpers.IsSessionValid(r) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return

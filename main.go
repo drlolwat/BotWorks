@@ -3,6 +3,7 @@ package main
 import (
 	"BotWorks/src/Storage"
 	"BotWorks/src/Web/Handlers"
+	"BotWorks/src/Web/Handlers/Actions"
 	"BotWorks/src/Web/Sessions"
 	"BotWorks/src/Web/Template"
 	"bufio"
@@ -21,15 +22,20 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
+
+	// pages with templates
 	r.HandleFunc("/", Handlers.IndexHandler)
 	r.HandleFunc("/dashboard", Handlers.DashboardHandler)
-	r.HandleFunc("/logout", Handlers.LogoutHandler)
-	r.HandleFunc("/start/id/{id}", Handlers.HandleStartBotById)
-	r.HandleFunc("/start/group/{id}", Handlers.HandleStartBotsByGroup)
-	r.HandleFunc("/stop/id/{id}", Handlers.HandleStopBotById)
-	r.HandleFunc("/stop/group/{id}", Handlers.HandleStopBotByGroup)
-	r.HandleFunc("/start/all", Handlers.HandleStartAll)
-	r.HandleFunc("/stop/all", Handlers.HandleStopAll)
+	r.HandleFunc("/accounts", Handlers.AccountsHandler)
+
+	// pages that are essentially actions and redirects
+	r.HandleFunc("/logout", Actions.LogoutAction)
+	r.HandleFunc("/start/id/{id}", Actions.StartBotByIdAction)
+	r.HandleFunc("/start/group/{id}", Actions.StartBotsByGroupAction)
+	r.HandleFunc("/stop/id/{id}", Actions.StopBotByIdAction)
+	r.HandleFunc("/stop/group/{id}", Actions.StopBotByGroupAction)
+	r.HandleFunc("/start/all", Actions.StartAllBotsAction)
+	r.HandleFunc("/stop/all", Actions.StopAllBotsAction)
 
 	fs := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", fs))

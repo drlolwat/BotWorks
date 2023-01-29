@@ -3,12 +3,74 @@ package Helpers
 import (
 	"BotWorks/src/Config"
 	"BotWorks/src/Storage"
+	"BotWorks/src/Structs"
 	"database/sql"
 	"fmt"
 	"os/exec"
+	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
+
+// cheers chatgpt
+func GetLatestLogFile() string {
+	config := Config.GetConfig()
+	files, err := ReadDir(config.DreambotLogsDir)
+	if err != nil {
+		fmt.Println("Error reading directory:", err)
+		return ""
+	}
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().After(files[j].ModTime())
+	})
+	logFile := files[0].Name()
+	return logFile
+}
+
+func GetBotStatus(botId int) string {
+	config := Config.GetConfig()
+	var fileName string
+
+	rows, _ := Storage.GetDb().Query("SELECT logfile FROM accounts WHERE id = ?", botId)
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}(rows)
+
+	for rows.Next() {
+		err := rows.Scan(&fileName)
+		if err != nil {
+			return "No Status"
+		}
+	}
+
+	filepath := config.DreambotLogsDir + "/" + fileName
+
+	lastLine := TailFile(filepath, 4)
+	lastLine = strings.ToLower(lastLine)
+
+	if strings.Contains(lastLine, "starting break") {
+		return "BREAK"
+	}
+
+	lastTen := TailFile(filepath, 10)
+	lastTen = strings.ToLower(lastTen)
+
+	if strings.Contains(lastTen, "members_world") {
+		return "BOND"
+	} else if strings.Contains(lastTen, "disabled") {
+		if strings.Contains(lastTen, "severity") {
+			return "BANNED"
+		}
+	}
+
+	return "ACTIVE"
+}
 
 func GetPid(botId int) int {
 	var pid int
@@ -39,7 +101,7 @@ func KillBot(botId int, userId int) {
 		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
 		_ = cmd.Start()
 
-		err := SetBotPidById(botId, 0)
+		err := SetBotPidById(botId, 0, "")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -66,17 +128,18 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 				return
 			}
 
-			err = SetBotPidById(botId, StartBotFromId(userId, botId))
+			botPid, logFile := StartBotFromId(userId, botId)
+			err = SetBotPidById(botId, botPid, logFile)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			time.Sleep(1)
+			time.Sleep(3 * time.Second) // mass starts wait an additional 3 seconds to make sure they get the logfile
 		}
 	}()
 }
 
-func StartBotFromId(userId int, pBotId int) int {
+func StartBotFromId(userId int, pBotId int) (int, string) {
 	var config = Config.GetConfig()
 	var botId int
 	var botLoginName string
@@ -95,7 +158,7 @@ func StartBotFromId(userId int, pBotId int) int {
 			"b.id,b.backend_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.id = ? AND a.customer_id = ?", pBotId, userId)
 	if err != nil {
 		fmt.Println(err)
-		return 0
+		return 0, ""
 	}
 
 	defer func(rows *sql.Rows) {
@@ -110,7 +173,7 @@ func StartBotFromId(userId int, pBotId int) int {
 		err := rows.Scan(&botId, &botLoginName, &botLoginPass, &botBankPin, &proxyId, &scriptId, &scriptParams, &botBreaks, &botFps, &scriptDbId, &scriptSdnName)
 		if err != nil {
 			fmt.Println(err)
-			return 0
+			return 0, ""
 		}
 
 		var proxyUser string
@@ -133,6 +196,8 @@ func StartBotFromId(userId int, pBotId int) int {
 			botLoginName,
 			"-accountPassword",
 			botLoginPass,
+			"-fps",
+			botFps,
 		}
 
 		if proxyId > 0 {
@@ -159,20 +224,21 @@ func StartBotFromId(userId int, pBotId int) int {
 		}
 
 		pid := command.Process.Pid
-		return pid
+		time.Sleep(3 * time.Second)
+		return pid, GetLatestLogFile()
 	}
 
-	return 0
+	return 0, ""
 }
 
-func SetBotPidById(botId int, pid int) error {
-	stmt, err := Storage.GetDb().Prepare("UPDATE `accounts` SET `pid` = ? WHERE `id` = ?")
+func SetBotPidById(botId int, pid int, logFile string) error {
+	stmt, err := Storage.GetDb().Prepare("UPDATE `accounts` SET `pid` = ?, `logfile` = ? WHERE `id` = ?")
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	res, err := stmt.Exec(pid, botId)
+	res, err := stmt.Exec(pid, logFile, botId)
 
 	if err != nil {
 		fmt.Println(err)
@@ -193,4 +259,81 @@ func SetBotPidById(botId int, pid int) error {
 	}
 
 	return nil
+}
+
+func GetBotsByCustomerId(userId int) ([]Structs.BotData, []Structs.BotData, int) {
+	var runningBotData []Structs.BotData
+	var offlineBotData []Structs.BotData
+
+	rows, err := Storage.GetDb().Query("SELECT a.id,a.name,a.proxy_id,a.script_id,a.pid,a.group_id,a.fps,b.name AS script_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.customer_id = ?", userId)
+	if err != nil {
+		fmt.Println(err)
+		return []Structs.BotData{}, []Structs.BotData{}, 0
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	var runningBots = 0
+	var stoppedBots = 0
+	var scripts []int
+
+	for rows.Next() {
+		var accountId int
+		var name string
+		var proxyId int
+		var scriptId int
+		var pid int
+		var groupId int
+		var scriptName string
+		var status string
+		var fps int
+
+		err = rows.Scan(&accountId, &name, &proxyId, &scriptId, &pid, &groupId, &fps, &scriptName)
+		if err != nil {
+			fmt.Println(err)
+			return []Structs.BotData{}, []Structs.BotData{}, 0
+		}
+
+		if !ContainsInt(scriptId, scripts) {
+			scripts = append(scripts, scriptId)
+		}
+
+		if pid > 0 {
+			runningBots++
+		} else {
+			stoppedBots++
+		}
+
+		//TODO status comes from the logfile
+		status = GetBotStatus(accountId)
+
+		var botData = Structs.BotData{
+			AccountId:   accountId,
+			AccountName: name,
+			Script:      scriptName,
+			Status:      status,
+			Pid:         pid,
+			GroupId:     groupId,
+			ProxyId:     proxyId,
+			Fps:         fps,
+		}
+
+		if pid > 0 {
+			if !ContainsBotData(botData, runningBotData) {
+				runningBotData = append(runningBotData, botData)
+			}
+		} else {
+			if !ContainsBotData(botData, offlineBotData) {
+				offlineBotData = append(offlineBotData, botData)
+			}
+		}
+
+	}
+
+	return runningBotData, offlineBotData, len(scripts)
 }

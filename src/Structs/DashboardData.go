@@ -5,7 +5,7 @@ type DashboardData struct {
 	StoppedBots    int
 	UniqueScripts  int
 	CurrentTime    string
-	OnlineBotData  []DashboardBotData
-	OfflineBotData []DashboardBotData
+	OnlineBotData  []BotData
+	OfflineBotData []BotData
 	GroupData      []GroupData
 }

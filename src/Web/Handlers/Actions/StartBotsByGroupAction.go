@@ -1,7 +1,8 @@
-package Handlers
+package Actions
 
 import (
 	"BotWorks/src/Helpers"
+	"BotWorks/src/Storage"
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
 	"github.com/gorilla/mux"
@@ -9,9 +10,9 @@ import (
 	"strconv"
 )
 
-func HandleStopBotById(w http.ResponseWriter, r *http.Request) {
+func StartBotsByGroupAction(w http.ResponseWriter, r *http.Request) {
 	if !Helpers.IsSessionValid(r) {
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
 	}
 
@@ -27,8 +28,15 @@ func HandleStopBotById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
-	Helpers.KillBot(id, user.ID)
 
-	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
-	return
+	if id > 0 {
+		rows, err := Storage.GetDb().Query("SELECT id FROM accounts WHERE group_id = ? AND customer_id = ? AND pid = 0", id, user.ID)
+		if err != nil {
+			return
+		}
+
+		Helpers.StartFromDbRows(rows, user.ID)
+		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+		return
+	}
 }
