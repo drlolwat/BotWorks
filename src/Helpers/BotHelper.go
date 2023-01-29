@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os/exec"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -229,6 +230,26 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 	}
 
 	return 0, ""
+}
+
+func IsBotRunning(pid int) bool {
+	var command string
+	var output []byte
+	var err error
+
+	if runtime.GOOS == "windows" {
+		command = fmt.Sprintf("tasklist /FI \"PID eq %d\"", pid)
+		output, err = exec.Command("cmd", "/C", command).Output()
+	} else {
+		command = fmt.Sprintf("ps %d", pid)
+		output, err = exec.Command("sh", "-c", command).Output()
+	}
+
+	if err != nil {
+		return false
+	}
+
+	return !strings.Contains(strings.ToLower(string(output)), "no tasks")
 }
 
 func SetBotPidById(botId int, pid int, logFile string) error {

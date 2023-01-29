@@ -44,7 +44,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 			session.Values[Sessions.UserIDKey] = user.Id
 			session.Save(r, w)
 
-			println("login was a success for user: " + username)
+			println("User has authenticated: " + username)
 			http.Redirect(w, r, "/dashboard", http.StatusFound)
 			return
 		}

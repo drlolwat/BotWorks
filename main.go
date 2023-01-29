@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BotWorks/src/Daemon"
 	"BotWorks/src/Storage"
 	"BotWorks/src/Web/Handlers"
 	"BotWorks/src/Web/Handlers/Actions"
@@ -50,6 +51,8 @@ func main() {
 			println(err)
 		}
 	}()
+
+	go Daemon.Begin()
 
 	println("  ____        _     ____            _     _       ")
 	println(" |  _ \\      | |   |  _ \\          | |   | |      ")

@@ -138,7 +138,7 @@ func SchedulesHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = Template.GetTpl().ExecuteTemplate(w, "schedules.html", groupsPageData)
 	if err != nil {
-		println("failed to execute tpl: groups")
+		println("failed to execute tpl: schedules")
 	}
 
 	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_footer.html", nil)
