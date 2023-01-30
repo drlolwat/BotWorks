@@ -49,6 +49,28 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if r.PostForm.Has("oh_shit_button") {
+		_, _ = Storage.GetDb().Exec("DELETE FROM account_groups")
+		_, _ = Storage.GetDb().Exec("DELETE FROM account_schedules")
+		_, _ = Storage.GetDb().Exec("DELETE FROM accounts")
+		_, _ = Storage.GetDb().Exec("DELETE FROM customers")
+		_, _ = Storage.GetDb().Exec("DELETE FROM proxies")
+		_, _ = Storage.GetDb().Exec("DELETE FROM scripts")
+		_, _ = Storage.GetDb().Exec("UPDATE configuration SET db_jar = ?, db_logs = ?, db_username, db_password = ?", "", "", "", "")
+
+		fmt.Println("The entire panel has been wiped")
+
+		session, _ := Sessions.Store.Get(r, Sessions.SessionName)
+		session.Options.MaxAge = -1
+		err := session.Save(r, w)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
 	systemData := map[string]interface{}{
 		"Config": Config.GetConfig(),
 	}
@@ -60,7 +82,7 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = Template.GetTpl().ExecuteTemplate(w, "system.html", systemData)
 	if err != nil {
-		println("failed to execute tpl: schedules")
+		println("failed to execute tpl: system")
 	}
 
 	err = Template.GetTpl().ExecuteTemplate(w, "bootstrap_footer.html", nil)

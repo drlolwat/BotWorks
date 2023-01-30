@@ -18,6 +18,7 @@ const (
 )
 
 var key = []byte("AES_LOLWAT_KEYBB")
+var authenticated = false
 
 func License() bool {
 	licenseKey, err := readLicenseKey()
@@ -96,7 +97,8 @@ func License() bool {
 		return false
 	}
 
-	return !strings.Contains(string(plaintext), "INVALID")
+	authenticated = !strings.Contains(string(plaintext), "INVALID")
+	return authenticated
 }
 
 func readLicenseKey() (string, error) {

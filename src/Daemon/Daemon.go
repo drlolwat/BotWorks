@@ -77,7 +77,13 @@ func Begin() {
 				} else {
 					if currentHour == startHour && currentMin >= startMin {
 						botsStarted++
-						Helpers.StartBotFromId(customer, id)
+						newPid, newLog := Helpers.StartBotFromId(customer, id)
+						err := Helpers.UpdateBotStatus(id, newPid, newLog)
+						if err != nil {
+							fmt.Println("Big error issue starting bot, could not update status!")
+							Helpers.KillBot(id, customer)
+							continue
+						}
 						time.Sleep(5 * time.Second)
 						continue
 					}

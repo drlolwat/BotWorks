@@ -142,8 +142,9 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 	}()
 }
 
+// returns pid,logfile
 func StartBotFromId(userId int, pBotId int) (int, string) {
-	if !License() {
+	if !authenticated {
 		fmt.Println("Starting of bots is deactivated until a valid license code is present.")
 		return 0, ""
 	}
@@ -228,6 +229,8 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			args = append(args, "-world", "f2p")
 		} else if strings.Contains(strings.ToLower(scriptSdnName), "mule") {
 			args = append(args, "-world", "308")
+		} else {
+			args = append(args, "-world", "members")
 		}
 
 		args = append(args, "-destroy", "-fresh", "-covert", "-params", scriptParams)
@@ -260,7 +263,7 @@ func IsBotRunningLinux(pid int) bool {
 }
 
 func IsBotRunning(pid int) bool {
-	if !License() {
+	if !authenticated {
 		fmt.Println("Bot tracking is deactivated until a valid license code is present.")
 		return false
 	}
@@ -280,7 +283,7 @@ func IsBotRunning(pid int) bool {
 }
 
 func UpdateBotStatus(botId int, pid int, logFile string) error {
-	if !License() {
+	if !authenticated {
 		return errors.New("status updating of bots is deactivated until a valid license code is present")
 	}
 

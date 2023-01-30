@@ -1,0 +1,111 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        <a class='btn btn-primary btn-xs btn-success' href='/scripts?a=t' role='button'>New Script</a>
+                    </div>
+
+                    <div class="card-body">
+                        <table width="100%" id="scripts" name="scripts" class="display">
+                            <thead>
+                            <tr>
+                                <th>Nickname</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range .Scripts }}
+                                <tr>
+                                    <td>
+                                        {{ .PublicName }}
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/scripts?e={{ .Id }}">E</a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/scripts?d={{ .Id }}">D</a>
+                                    </td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    {{ if or .AddingScript .EditingScript }}
+                        <div class="card-header">
+                            Script Manager
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                <table style="width:65%">
+                                <tr>
+                                    <td>
+                                        Script Nickname (for panel reference)
+                                    </td>
+                                    <td>
+                                        <input type="text" name="nickname" value="{{ .ScriptData.PublicName }}" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Script Name (SDN name or local name)
+                                    </td>
+                                    <td>
+                                        <input type="text" name="realname" value="{{ .ScriptData.SdnName }}" class="form-control">
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <td>
+                                            {{ if .AddingScript }}
+                                                <input type='submit' name='add' value='Add script' class='form-control' style="width:40%">
+                                            {{ else if .EditingScript }}
+                                                <input type='submit' name='update' value='Modify script' class='form-control' style="width:40%">
+                                                <input type='hidden' name='id' value='{{ .ScriptData.Id }}'>
+                                            {{ end }}
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    {{ else }}
+                        <div class="card-header">
+                            Select or create a script on the left to get started.
+                        </div>
+                        <div class="card-body">
+
+                        </div>
+                    {{ end }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#scripts').DataTable({
+            scrollCollapse: true,
+            paging: false,
+            scrollX: true,
+            scrollY: true,
+            searching: true,
+        });
+    });
+</script>

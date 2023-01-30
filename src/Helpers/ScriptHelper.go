@@ -8,7 +8,7 @@ import (
 )
 
 func GetScripts() []Structs.ScriptData {
-	rows, err := Storage.GetDb().Query("SELECT id,name,backend_name FROM scripts")
+	rows, err := Storage.GetDb().Query("SELECT id,name,backend_name FROM scripts WHERE id > 0")
 
 	if err != nil {
 		fmt.Println(err)

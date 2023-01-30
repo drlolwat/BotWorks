@@ -1,6 +1,15 @@
 <div class="splash-container">
     <div class="card ">
-        <div class="card-header text-center"><span class="splash-description">Welcome to Bot Buddy<br />Log in to proceed</span></div>
+        <div class="card-header text-center"><span class="splash-title">Welcome to BotBuddy</span><br />
+            <span class="splash-description">
+                {{ if .NeedsAccount }}
+                    Please set up your BotBuddy by entering the username and password you wish to use. <br /> <br />
+                        You cannot reset this password. Do not forget it, or you will need a fresh database.
+                {{ else }}
+                    Log in to proceed.
+                {{ end }}
+            </span>
+        </div>
         <div class="card-body">
             <form method="post">
                 <div class="form-group">

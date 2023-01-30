@@ -101,7 +101,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	data := Structs.DashboardData{RunningBots: len(runningBotData), StoppedBots: len(offlineBotData), UniqueScripts: uniqueScripts, CurrentTime: Helpers.TimeString(), OnlineBotData: runningBotData, OfflineBotData: offlineBotData, GroupData: groups}
 	err = Template.GetTpl().ExecuteTemplate(w, "dashboard.html", data)
 	if err != nil {
-		println(err.Error())
+		println("failed to execute tpl: dashboard")
 		return
 	}
 
