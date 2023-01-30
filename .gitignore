@@ -1,5 +1,6 @@
 /bin/Botworks.db
 /bin/go_build_BotWorks.exe
+/bin/BotBuddy.exe
 /.idea/
 /Botworks.db
 /BotBuddy.db
@@ -7,3 +8,5 @@
 /Botworks.db-wal
 /BotBuddy.db-wal
 /BotBuddy.db-shm
+/bin/license.key
+/license.key

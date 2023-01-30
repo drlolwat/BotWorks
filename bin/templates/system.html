@@ -1,0 +1,53 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        Dreambot Configuration
+                    </div>
+
+                    <div class="card-body">
+                        <form method="post">
+                            <table style="width:100%">
+                                <tr>
+                                    <td>Client Location</td>
+                                    <td><input type="text" name="jar" value="{{ .Config.DreambotJar }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td>Logs Location</td>
+                                    <td><input type="text" name="logs" value="{{ .Config.DreambotLogsDir }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td>Dreambot Username</td>
+                                    <td><input type="text" name="user" value="{{ .Config.DreambotUsername }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td>Dreambot Password</td>
+                                    <td><input type="password" name="pass" value="{{ .Config.DreambotPassword }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="submit" name="update" value="Update Configuration" class="form-control">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

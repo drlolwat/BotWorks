@@ -5,6 +5,7 @@ import (
 	"BotWorks/src/Storage"
 	"BotWorks/src/Structs"
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -103,7 +104,7 @@ func KillBot(botId int, userId int) {
 		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
 		_ = cmd.Start()
 
-		err := SetBotPidById(botId, 0, "")
+		err := UpdateBotStatus(botId, 0, "")
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -131,7 +132,7 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 			}
 
 			botPid, logFile := StartBotFromId(userId, botId)
-			err = SetBotPidById(botId, botPid, logFile)
+			err = UpdateBotStatus(botId, botPid, logFile)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -142,6 +143,11 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 }
 
 func StartBotFromId(userId int, pBotId int) (int, string) {
+	if !License() {
+		fmt.Println("Starting of bots is deactivated until a valid license code is present.")
+		return 0, ""
+	}
+
 	var config = Config.GetConfig()
 	var botId int
 	var botLoginName string
@@ -254,6 +260,10 @@ func IsBotRunningLinux(pid int) bool {
 }
 
 func IsBotRunning(pid int) bool {
+	if !License() {
+		fmt.Println("Bot tracking is deactivated until a valid license code is present.")
+		return false
+	}
 	handle, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, false, uint32(pid))
 	if err != nil {
 		return false
@@ -269,7 +279,11 @@ func IsBotRunning(pid int) bool {
 	return exitCode == 259
 }
 
-func SetBotPidById(botId int, pid int, logFile string) error {
+func UpdateBotStatus(botId int, pid int, logFile string) error {
+	if !License() {
+		return errors.New("status updating of bots is deactivated until a valid license code is present")
+	}
+
 	stmt, err := Storage.GetDb().Prepare("UPDATE `accounts` SET `pid` = ?, `logfile` = ? WHERE `id` = ?")
 	if err != nil {
 		fmt.Println(err)

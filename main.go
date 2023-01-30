@@ -65,6 +65,7 @@ func main() {
 	println("   Version v2.0, by lolwat                   |___/ ")
 	println()
 	println()
+
 	println("Server is now listening on port 80")
 
 	// Keep this bitch going forever and ever, perhaps implement commands

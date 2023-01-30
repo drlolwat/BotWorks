@@ -1,0 +1,93 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        <a class='btn btn-primary btn-xs btn-success' href='/schedules?a=t' role='button'>New Schedule</a>
+                    </div>
+
+                    <div class="card-body">
+                        <table width="100%" id="schedules" name="schedules" class="display">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range .Schedules }}
+                                <tr>
+                                    <td>
+                                        {{ .Name }} ({{ .TotalUsers }})
+                                    </td>
+                                    <td>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/schedules?e={{ .Id }}">E</a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/schedules?d={{ .Id }}">D</a>
+                                    </td>
+                                </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                    {{ if or .AddingSchedule .EditingSchedule }}
+                        <div class="card-header">
+                            Schedule Manager
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                You are currently {{ if .EditingSchedule }} modifying {{ else }} adding {{ end }} the
+                                <input type="text" name="name" value="{{ .ScheduleData.Name }}"> schedule. All times are in 24-hour format, using server time.<br /><br />
+                                {{if .EditingSchedule }}Currently, it is{{ else }}It will be{{ end }} configured to start at
+                                <input type="number" name="start_hour" value="{{ .ScheduleData.StartHour }}" style="width:40px;"> <b>:</b> <input type="number" name="start_min" value="{{ .ScheduleData.StartMinute }}" style="width:40px;">
+                                and turn off at <input type="number" name="end_hour" value="{{ .ScheduleData.EndHour }}" style="width:40px;"> <b>:</b> <input type="number" name="end_min" value="{{ .ScheduleData.EndMinute }}" style="width:40px;"><br /><br />
+                                {{ if .AddingSchedule }}
+                                    <input type='submit' name='add' value='Add schedule' class='form-control' style="width:20%">
+                                {{ else if .EditingSchedule }}
+                                    <input type='submit' name='update' value='Modify schedule' class='form-control' style="width:20%">
+                                    <input type='hidden' name='id' value='{{ .ScheduleData.Id }}'>
+                                {{ end }}
+                            </form>
+                        </div>
+                    {{ else }}
+                        <div class="card-header">
+                            Select or create a schedule on the left to get started.
+                        </div>
+                        <div class="card-body">
+
+                        </div>
+                    {{ end }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#schedules').DataTable({
+            scrollCollapse: true,
+            paging: false,
+            scrollX: true,
+            scrollY: true,
+            searching: true,
+        });
+    });
+</script>

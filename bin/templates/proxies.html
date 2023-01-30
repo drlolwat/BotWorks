@@ -1,0 +1,116 @@
+<style type="text/css">
+    td {
+        padding: 3.2px 0px;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="container-fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="section-block" id="c-nav">
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+
+                    <div class="card-header">
+                        <a class='btn btn-primary btn-xs btn-success' href='/proxies?a=t' role='button'>New Proxy</a>
+                    </div>
+
+                    <div class="card-body">
+                        <table width="100%" id="proxies" name="proxies" class="display">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {{ range .Proxies }}
+                                    <tr>
+                                        <td>
+                                            {{ .Name }} ({{ .Accounts }})
+                                        </td>
+                                        <td>
+                                            <a class='btn btn-primary btn-xs btn-info' href="/proxies?e={{ .Id }}">E</a>
+                                            <a class='btn btn-primary btn-xs btn-danger' href="/proxies?d={{ .Id }}">D</a>
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
+                        {{ if or .AddingProxy .EditingProxy }}
+                            <div class="card-header">
+                                    Proxy Manager
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <table width="75%">
+                                        <tr>
+                                            <td>Proxy Nickname</td>
+                                            <td><input type='text' name='nickname' value="{{ .ProxyData.Name }}" class='form-control' required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proxy IP</td>
+                                            <td><input type='text' name='ip' value="{{ .ProxyData.IpAddress }}" class='form-control' required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proxy Port</td>
+                                            <td><input type='number' name='port' value="{{ .ProxyData.Port }}" class='form-control' required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proxy Username</td>
+                                            <td><input type='text' name='username' value="{{ .ProxyData.Username }}" class='form-control' required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Proxy Password</td>
+                                            <td><input type='text' name='password' value="{{ .ProxyData.Password }}" class='form-control' required></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                {{ if .AddingProxy }}
+                                                <input type='submit' name='add' value='Add proxy' class='form-control'>
+                                                {{ else if .EditingProxy }}
+                                                <input type='submit' name='update' value='Modify proxy' class='form-control'>
+                                                <input type='hidden' name='proxy_id' value='{{ .ProxyData.Id }}'>
+                                                {{ end }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                        {{ else }}
+                            <div class="card-header">
+                                Select or create a proxy on the left to get started.
+                            </div>
+                            <div class="card-body">
+
+                            </div>
+                        {{ end }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#proxies').DataTable({
+                scrollCollapse: true,
+                paging: false,
+                scrollX: true,
+                scrollY: true,
+                searching: true,
+            });
+        });
+    </script>
