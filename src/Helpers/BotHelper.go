@@ -193,7 +193,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		args := []string{
 			"-jar",
 			"-Xms256M",
-			"-Xmx4G",
+			"-Xmx1G",
 			config.DreambotJar,
 			"-username",
 			config.DreambotUsername,
