@@ -38,7 +38,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 					hashedPassword, _ := scrypt.GenerateFromPassword([]byte(password))
 
 					// Insert the new account into the customers table
-					_, insertErr := Storage.GetDb().Exec("INSERT INTO customers (handle, password) VALUES (?, ?)", username, hashedPassword)
+					_, insertErr := Storage.GetDb().Exec("INSERT INTO customers (id, handle, password) VALUES (?, ?, ?)", 1, username, hashedPassword)
 					if insertErr != nil {
 						println("failed to insert new customer: " + username)
 						http.Redirect(w, r, "/", http.StatusFound)
