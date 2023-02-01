@@ -3,6 +3,11 @@
 
 package Helpers
 
+import (
+	"fmt"
+	"syscall"
+)
+
 func IsBotRunning(pid int) bool {
 	if !authenticated {
 		fmt.Println("Bot tracking is deactivated until a valid license code is present.")
