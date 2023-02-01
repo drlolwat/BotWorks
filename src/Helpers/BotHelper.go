@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"sort"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -95,23 +94,6 @@ func GetPid(botId int) int {
 	}
 
 	return pid
-}
-
-func KillBot(botId int, userId int) {
-	pid := GetPid(botId)
-
-	if pid > 0 {
-		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
-		_ = cmd.Start()
-
-		err := UpdateBotStatus(botId, 0, "")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
-
-	return
 }
 
 func StartFromDbRows(rows *sql.Rows, userId int) {
@@ -234,10 +216,17 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		}
 
 		args = append(args, "-destroy", "-fresh", "-covert", "-params", scriptParams)
-		command := exec.Command("javaw", args...)
+
+		execType := "javaw"
+		if OperatingSystem != "windows" {
+			execType = "java"
+		}
+
+		command := exec.Command(execType, args...)
 		err = command.Start()
 		if err != nil {
 			fmt.Println(err)
+			return 0, ""
 		}
 
 		pid := command.Process.Pid

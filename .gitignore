@@ -10,3 +10,6 @@
 /BotBuddy.db-shm
 /bin/license.key
 /license.key
+/bin/BotBuddy.db
+/bin/BotBuddy.db-wal
+/bin/BotBuddy-db-shm

@@ -8,6 +8,8 @@ import (
 	"syscall"
 )
 
+var OperatingSystem = "windows"
+
 func IsBotRunning(pid int) bool {
 	if !authenticated {
 		fmt.Println("Bot tracking is deactivated until a valid license code is present.")
@@ -26,4 +28,21 @@ func IsBotRunning(pid int) bool {
 	}
 
 	return exitCode == 259
+}
+
+func KillBot(botId int, userId int) {
+	pid := GetPid(botId)
+
+	if pid > 0 {
+		cmd := exec.Command("taskkill", "/PID", strconv.Itoa(pid), "/F")
+		_ = cmd.Start()
+
+		err := UpdateBotStatus(botId, 0, "")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+
+	return
 }

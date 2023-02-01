@@ -62,7 +62,6 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostForm.Has("add") {
-				fmt.Println("hey")
 				_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, proxy, script, params, user.Id, "", 0, grp, breaks, sched, fps)
 				if err != nil {
 					fmt.Println(err)
