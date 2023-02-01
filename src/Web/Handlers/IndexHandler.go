@@ -51,7 +51,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 					http.Redirect(w, r, "/", http.StatusFound)
 					return
 				}
-				println("login failed for user: " + username)
+				println("Login failed for user: " + username)
 				http.Redirect(w, r, "/", http.StatusFound)
 				return
 			}

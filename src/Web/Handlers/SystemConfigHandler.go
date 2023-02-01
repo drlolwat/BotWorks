@@ -50,19 +50,49 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.PostForm.Has("oh_shit_button") {
-		_, _ = Storage.GetDb().Exec("DELETE FROM account_groups")
-		_, _ = Storage.GetDb().Exec("DELETE FROM account_schedules")
-		_, _ = Storage.GetDb().Exec("DELETE FROM accounts")
-		_, _ = Storage.GetDb().Exec("DELETE FROM customers")
-		_, _ = Storage.GetDb().Exec("DELETE FROM proxies")
-		_, _ = Storage.GetDb().Exec("DELETE FROM scripts")
-		_, _ = Storage.GetDb().Exec("UPDATE configuration SET db_jar = ?, db_logs = ?, db_username, db_password = ?", "", "", "", "")
+		_, err := Storage.GetDb().Exec("DELETE FROM account_groups WHERE id > 0")
+
+		if err != nil {
+			fmt.Println("A", err)
+		}
+
+		_, err = Storage.GetDb().Exec("DELETE FROM account_schedules WHERE id > 0")
+
+		if err != nil {
+			fmt.Println("B", err)
+		}
+		_, err = Storage.GetDb().Exec("DELETE FROM accounts")
+
+		if err != nil {
+			fmt.Println("C", err)
+		}
+		_, err = Storage.GetDb().Exec("DELETE FROM customers")
+
+		if err != nil {
+			fmt.Println("D", err)
+		}
+		_, err = Storage.GetDb().Exec("DELETE FROM proxies WHERE id > 0")
+
+		if err != nil {
+			fmt.Println("E", err)
+		}
+		_, err = Storage.GetDb().Exec("DELETE FROM scripts WHERE id > 0")
+
+		if err != nil {
+			fmt.Println("F", err)
+		}
+
+		_, err = Storage.GetDb().Exec("UPDATE configuration SET db_jar = ?, db_logs = ?, db_username = ?, db_password = ?", "C:\\", "C:\\", "user", "pass")
+
+		if err != nil {
+			fmt.Println("G", err)
+		}
 
 		fmt.Println("The entire panel has been wiped")
 
 		session, _ := Sessions.Store.Get(r, Sessions.SessionName)
 		session.Options.MaxAge = -1
-		err := session.Save(r, w)
+		err = session.Save(r, w)
 		if err != nil {
 			fmt.Println(err)
 		}
