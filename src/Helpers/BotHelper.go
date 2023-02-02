@@ -215,7 +215,11 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			args = append(args, "-world", "members")
 		}
 
-		args = append(args, "-destroy", "-fresh", "-covert", "-params", scriptParams)
+		args = append(args, "-destroy", "-fresh", "-covert")
+
+		if scriptParams != "" && scriptParams != "\"\"" {
+			args = append(args, "-params", scriptParams)
+		}
 
 		execType := "javaw"
 		if OperatingSystem != "windows" {
