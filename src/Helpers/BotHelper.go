@@ -194,16 +194,14 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		if proxyId > 0 {
 			prox, _ := Storage.GetDb().Query("SELECT ip,port,username,password FROM proxies WHERE id = ?", proxyId)
 
-			defer func(prox *sql.Rows) {
-				err := prox.Close()
-				if err != nil {
-					fmt.Println(err)
-				}
-			}(prox)
-
 			for prox.Next() {
 				_ = prox.Scan(&proxyIp, &proxyPort, &proxyUser, &proxyPass)
 				args = append(args, "-proxyHost", proxyIp, "-proxyPort", proxyPort, "-proxyUser", proxyUser, "-proxyPass", proxyPass)
+			}
+
+			err := prox.Close()
+			if err != nil {
+				return 0, ""
 			}
 		}
 
