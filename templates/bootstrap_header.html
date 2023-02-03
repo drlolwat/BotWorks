@@ -18,65 +18,69 @@
 </head>
 
 <body>
-    <div class="dashboard-main-wrapper">
-        <div class="dashboard-header">
-            <nav class="navbar navbar-expand-lg bg-white fixed-top">
-                <a class="navbar-brand" href="/">Botbuddy</a></nav>
-        </div>
-        <div class="nav-left-sidebar sidebar-dark">
-            <div class="menu-list">
-                <nav class="navbar navbar-expand-lg navbar-light">
-                    <a class="d-xl-none d-lg-none" href="#">{{ .Name }}</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav flex-column">
-                            <li class="nav-divider">
-                                Your Manager
-                            </li>
-                            {{ if .LoggedIn }}
+<div class="dashboard-main-wrapper">
+    <div class="dashboard-header">
+        <nav class="navbar navbar-expand-lg bg-white fixed-top">
+            <a class="navbar-brand" href="/">Botbuddy</a></nav>
+    </div>
+    <div class="nav-left-sidebar sidebar-dark">
+        <div class="menu-list">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="d-xl-none d-lg-none" href="#">{{ .Name }}</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav flex-column">
+                        <li class="nav-divider">
+                            Your Manager
+                        </li>
+                        {{ if .LoggedIn }}
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "dashboard" }}active{{ end }}" href="/dashboard" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Dashboard</a>
-                                </li>
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "accounts" }}active{{ end }}" href="/accounts" aria-expanded="false"><i class="fa fa-fw fa-address-book"></i>Accounts</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "dashboard" }}active{{ end }}" href="/dashboard" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Dashboard</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "accounts" }}active{{ end }}" href="/accounts" aria-expanded="false"><i class="fa fa-fw fa-address-book"></i>Accounts</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "proxies" }}active{{ end }}" href="/proxies" aria-expanded="false"><i class="fa fa-fw fa-rss"></i>Proxies</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "proxies" }}active{{ end }}" href="/proxies" aria-expanded="false"><i class="fa fa-fw fa-rss"></i>Proxies</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "groups" }}active{{ end }}" href="/groups" aria-expanded="false"><i class="fa fa-fw fa-user"></i>Groups</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "groups" }}active{{ end }}" href="/groups" aria-expanded="false"><i class="fa fa-fw fa-user"></i>Groups</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "schedules" }}active{{ end }}" href="/schedules" aria-expanded="false"><i class="fa fa-fw fa-clipboard-list"></i>Schedules</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "schedules" }}active{{ end }}" href="/schedules" aria-expanded="false"><i class="fa fa-fw fa-clipboard-list"></i>Schedules</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "scripts" }}active{{ end }}" href="/scripts" aria-expanded="false"><i class="fa fa-fw fa-barcode"></i>Scripts</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "scripts" }}active{{ end }}" href="/scripts" aria-expanded="false"><i class="fa fa-fw fa-barcode"></i>Scripts</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link {{ if eq .Url "system" }}active{{ end }}" href="/system" aria-expanded="false"><i class="fa fa-fw fa-code"></i>System Config</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "massactions" }}active{{ end }}" href="/massactions" aria-expanded="false"><i class="fa fa-fw fa-user-plus"></i>Mass Actions</a>
+                        </li>
 
-                                <li class="nav-item ">
-                                    <a class="nav-link" href="/logout" aria-expanded="false"><i class="fa fa-fw fa-window-close"></i>Log out</a>
-                                </li>
+                        <li class="nav-item ">
+                            <a class="nav-link {{ if eq .Url "system" }}active{{ end }}" href="/system" aria-expanded="false"><i class="fa fa-fw fa-code"></i>System Config</a>
+                        </li>
 
-                            {{ else }}
-                                <li class="nav-item ">
-                                    <a class="nav-link active" href="/" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Log in</a>
-                                </li>
-                            {{ end }}
-                        </ul>
-                    </div>
-                </nav>
-            </div>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="/logout" aria-expanded="false"><i class="fa fa-fw fa-window-close"></i>Log out</a>
+                        </li>
+
+                        {{ else }}
+                        <li class="nav-item ">
+                            <a class="nav-link active" href="/" aria-expanded="false"><i class="fa fa-fw fa-window-maximize"></i>Log in</a>
+                        </li>
+                        {{ end }}
+                    </ul>
+                </div>
+            </nav>
         </div>
     </div>
+</div>
 </body>
