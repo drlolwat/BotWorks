@@ -91,7 +91,10 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := map[string]interface{}{
-		"Config": Config.GetConfig(),
+		"Config":    Config.GetConfig(),
+		"Scripts":   Helpers.GetScripts(),
+		"Schedules": Helpers.GetSchedules(user.Id),
+		"Groups":    Helpers.GetGroups(user.Id),
 	}
 
 	err := Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", headerInfo)
