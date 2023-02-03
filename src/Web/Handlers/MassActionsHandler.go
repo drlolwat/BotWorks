@@ -64,7 +64,6 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("accounts") != "" && r.FormValue("script_id") != "" && r.FormValue("params") != "" &&
 			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" {
 
-			pin := r.FormValue("bank_pin")
 			script := r.FormValue("script_id")
 			params := r.FormValue("params")
 			sched := r.FormValue("schedule_id")
@@ -80,7 +79,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					username := accData[0]
 					password := accData[1]
 
-					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, -1, script, params, user.Id, "", 0, grp, breaks, sched, fps)
+					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, "-1", -1, script, params, user.Id, "", 0, grp, breaks, sched, fps)
 					if err != nil {
 						fmt.Println(err)
 						return
