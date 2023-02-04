@@ -7,11 +7,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"sort"
 	"strings"
-	"syscall"
 	"time"
 )
 
@@ -205,18 +203,24 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			}
 		}
 
+		args = append(args, "-destroy", "-fresh", "-covert")
+
 		if strings.Contains(strings.ToLower(scriptSdnName), "f2p") {
 			args = append(args, "-world", "f2p")
 		} else if strings.Contains(strings.ToLower(scriptSdnName), "mule") {
 			args = append(args, "-world", "308")
+		} else if strings.Contains(strings.ToLower(scriptSdnName), "todt") {
+			args = append(args, "-world", "307")
 		} else {
 			args = append(args, "-world", "members")
 		}
 
-		args = append(args, "-destroy", "-fresh", "-covert")
-
-		if scriptParams != "" && scriptParams != "\"\"" {
+		if scriptParams != "" {
 			args = append(args, "-params", scriptParams)
+		}
+
+		if botBreaks != "" {
+			args = append(args, "-breaks", botBreaks)
 		}
 
 		execType := "javaw"
@@ -237,20 +241,6 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 	}
 
 	return 0, ""
-}
-
-func IsBotRunningLinux(pid int) bool {
-	process, err := os.FindProcess(pid)
-	if err != nil {
-		fmt.Printf("Error finding process: %v\n", err)
-		return false
-	}
-	err = process.Signal(syscall.Signal(0))
-	if err != nil {
-		fmt.Printf("Error sending signal: %v\n", err)
-		return false
-	}
-	return true
 }
 
 func UpdateBotStatus(botId int, pid int, logFile string) error {

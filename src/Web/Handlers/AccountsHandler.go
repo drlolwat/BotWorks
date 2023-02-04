@@ -38,19 +38,30 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.PostForm.Has("update") || r.PostForm.Has("add") {
 		id := "0"
 		if r.FormValue("name") != "" && r.FormValue("password") != "" && r.FormValue("bank_pin") != "" &&
-			r.FormValue("proxy_id") != "" && r.FormValue("script_id") != "" && r.FormValue("params") != "" &&
+			r.FormValue("proxy_id") != "" && r.FormValue("script_id") != "" &&
 			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" {
+
+			breaks := ""
+			params := ""
 
 			username := r.FormValue("name")
 			password := r.FormValue("password")
 			pin := r.FormValue("bank_pin")
 			proxy := r.FormValue("proxy_id")
 			script := r.FormValue("script_id")
-			params := r.FormValue("params")
+			//params := r.FormValue("params")
 			sched := r.FormValue("schedule_id")
 			grp := r.FormValue("group_id")
-			breaks := r.FormValue("breaks")
+			//breaks := r.FormValue("breaks")
 			fps := r.FormValue("fps")
+
+			if r.FormValue("breaks") != "" {
+				breaks = r.FormValue("breaks")
+			}
+
+			if r.FormValue("params") != "" {
+				params = r.FormValue("params")
+			}
 
 			if r.PostForm.Has("update") && r.FormValue("account_id") != "" {
 				id = r.FormValue("account_id")
@@ -149,8 +160,8 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			Name:       "lol@wat.com",
 			Pass:       "lol123",
 			Pin:        -1,
-			Params:     "\"\"",
-			Breaks:     "\"\"",
+			Params:     "",
+			Breaks:     "",
 			Fps:        "20",
 			ScriptId:   -1,
 			ProxyId:    -1,

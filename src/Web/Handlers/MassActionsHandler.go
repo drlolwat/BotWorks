@@ -61,15 +61,24 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else if r.PostForm.Has("add_accounts") {
-		if r.FormValue("accounts") != "" && r.FormValue("script_id") != "" && r.FormValue("params") != "" &&
+		if r.FormValue("accounts") != "" && r.FormValue("script_id") != "" &&
 			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" {
 
+			breaks := ""
+			params := ""
+
 			script := r.FormValue("script_id")
-			params := r.FormValue("params")
 			sched := r.FormValue("schedule_id")
 			grp := r.FormValue("group_id")
-			breaks := r.FormValue("breaks")
 			fps := r.FormValue("fps")
+
+			if r.FormValue("breaks") != "" {
+				breaks = r.FormValue("breaks")
+			}
+
+			if r.FormValue("params") != "" {
+				params = r.FormValue("params")
+			}
 
 			split := strings.Split(r.FormValue("accounts"), "\r\n")
 
