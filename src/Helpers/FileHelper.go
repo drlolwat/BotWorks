@@ -46,5 +46,6 @@ func TailFile(filepath string, lines int) string {
 			lastLines = append(lastLines, scanner.Text())
 		}
 	}
+
 	return strings.Join(lastLines, "")
 }

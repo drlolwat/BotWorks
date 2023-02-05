@@ -1,6 +1,7 @@
 package Daemon
 
 import (
+	"BotWorks/src/Config"
 	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
 	"fmt"
@@ -15,6 +16,7 @@ func Begin() {
 
 	for true {
 		if Helpers.License() {
+			config := Config.GetConfig()
 			currentTime := Helpers.TimeString()
 			splitTime := strings.Split(currentTime, ":")
 			currentHour, _ := strconv.Atoi(splitTime[0])
@@ -24,8 +26,9 @@ func Begin() {
 			botsClosed := 0
 			botsStarted := 0
 			botsDetected := 0
+			botsRestarted := 0
 
-			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id FROM accounts")
+			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile FROM accounts")
 			if err != nil {
 				continue
 			}
@@ -36,8 +39,9 @@ func Begin() {
 				var schedule int
 				var pid int
 				var customer int
+				var logfile string
 
-				err := rows.Scan(&id, &name, &schedule, &pid, &customer)
+				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile)
 				if err != nil {
 					continue
 				}
@@ -52,6 +56,8 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
+						// here we should be checking if other bots of the same schedule are running
+						// starting it if required
 						botsDetected++
 					}
 				}
@@ -89,11 +95,31 @@ func Begin() {
 					}
 				}
 
+				// restart any bots not running their intended script
+				file := config.DreambotLogsDir + "/" + logfile
+				fileData := Helpers.TailFile(file, 30)
+
+				//11:26:34 PM: [INFO] [SYSTEM INFO] DreamBot Version: 3.14.6.7 / Script Running: None / Java: Oracle Corporation version 1.8.0_341 / OS: Windows Server 2016 version 10.0 / Memory: 298.16MB used out of 702.00MB total
+				if strings.Contains(fileData, "[SYSTEM INFO]") {
+					// Metrics here.
+					if strings.Contains(fileData, "Script Running: None") {
+						Helpers.KillBot(id, customer)
+						time.Sleep(650 * time.Millisecond)
+						newPid, newLog := Helpers.StartBotFromId(customer, id)
+						err := Helpers.UpdateBotStatus(id, newPid, newLog)
+						if err != nil {
+							fmt.Println("Big error issue restarting bot, could not update status!")
+							Helpers.KillBot(id, customer)
+							continue
+						}
+						botsRestarted++
+					}
+				}
 			}
 
 			_ = rows.Close()
 
-			fmt.Println("Daemon has detected", botsDetected, "bots. Started:", botsStarted, "| Stopped:", botsClosed, "| Undetected:", botsUndetected)
+			fmt.Println("Daemon has detected", botsDetected, "bots. Restarted:", botsRestarted, "| Started:", botsStarted, "| Stopped:", botsClosed, "| Undetected:", botsUndetected)
 			time.Sleep(cycleTime)
 		} else {
 			fmt.Println("Daemon is deactivated until a valid license code is present.")

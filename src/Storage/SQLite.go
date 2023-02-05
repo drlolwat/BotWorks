@@ -11,7 +11,7 @@ var (
 
 func Init() {
 	var err error
-	db, err = sql.Open("sqlite3", "./BotWorks.db")
+	db, err = sql.Open("sqlite3", "./BotBuddy.db")
 	_, err = db.Exec("PRAGMA journal_mode=WAL;")
 	if err != nil {
 		return
