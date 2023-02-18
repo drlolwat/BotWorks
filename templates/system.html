@@ -64,7 +64,6 @@
                                     </td>
                                     <td>
                                         {{ $d := .Config }}
-                                        {{ $d.BannedAction}}
                                         <select name="banned_action" class="form-control">
                                             <option value="0" {{if eq .Config.BannedAction 0 }} selected {{end}}>No Action</option>
                                             <option value="-1" {{if eq .Config.BannedAction -1 }} selected {{end}}>Delete</option>

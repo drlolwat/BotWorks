@@ -49,17 +49,12 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.PostForm.Has("update_system") {
 		if r.FormValue("banned_action") != "" && r.FormValue("complete_action") != "" {
-			fmt.Println(r.PostForm)
 			action := r.FormValue("banned_action")
 			completeAction := r.FormValue("complete_action")
 
-			fmt.Println(action, completeAction)
-			fmt.Println(Config.GetConfig().BannedAction)
-			fmt.Println(Config.GetConfig().CompleteAction)
-
-			_, err := Storage.GetDb().Exec("UPDATE configuration SET banned_action = ?", action, completeAction)
+			_, err := Storage.GetDb().Exec("UPDATE configuration SET banned_action = ?, complete_action = ?", action, completeAction)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("Updating system:", err)
 			}
 		}
 	} else if r.PostForm.Has("oh_shit_button") {

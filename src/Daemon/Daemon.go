@@ -58,24 +58,42 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
-						if Helpers.GetBotStatus(id) != "BANNED" {
-							// restart any bots not running their intended script
-							file := config.DreambotLogsDir + "/" + logfile
-							fileData := Helpers.TailFile(file, 30)
-							if strings.Contains(fileData, "[SYSTEM INFO]") {
-								// Metrics here.
-								// Restart the bot if its not running a script
-								if strings.Contains(fileData, "Script Running: None") {
+						botStatus := Helpers.GetBotStatus(id)
+						if botStatus != "BANNED" {
+							if botStatus == "COMPLETE" {
+								if config.CompleteAction != 0 {
 									Helpers.KillBot(id, customer)
-									time.Sleep(650 * time.Millisecond)
-									newPid, newLog := Helpers.StartBotFromId(customer, id)
-									err := Helpers.UpdateBotStatus(id, newPid, newLog)
-									if err != nil {
-										fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-										Helpers.KillBot(id, customer)
-										continue
+									if config.CompleteAction == -1 {
+										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+										if err != nil {
+											fmt.Println("Daemon:", err)
+										}
+									} else {
+										if config.CompleteAction > 0 {
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, group_id = ? WHERE id = ?", config.CompleteAction, id)
+										}
 									}
-									botsRestarted++
+									fmt.Println("Daemon:", name, "has been tagged as completed")
+								}
+							} else {
+								// restart any bots not running their intended script
+								file := config.DreambotLogsDir + "/" + logfile
+								fileData := Helpers.TailFile(file, 30)
+								if strings.Contains(fileData, "[SYSTEM INFO]") {
+									// Metrics here.
+									// Restart the bot if its not running a script
+									if strings.Contains(fileData, "Script Running: None") {
+										Helpers.KillBot(id, customer)
+										time.Sleep(650 * time.Millisecond)
+										newPid, newLog := Helpers.StartBotFromId(customer, id)
+										err := Helpers.UpdateBotStatus(id, newPid, newLog)
+										if err != nil {
+											fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+											Helpers.KillBot(id, customer)
+											continue
+										}
+										botsRestarted++
+									}
 								}
 							}
 						} else {
@@ -95,6 +113,7 @@ func Begin() {
 										fmt.Println("Daemon:", err)
 									}
 								}
+								fmt.Println("Daemon:", name, "has been tagged as banned")
 								botsClosed++
 							}
 

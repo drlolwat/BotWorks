@@ -69,6 +69,8 @@ func GetBotStatus(botId int) string {
 		} else if strings.Contains(lastTen, "locked") {
 			return "LOCKED"
 		}
+	} else if strings.Contains(lastTen, "Reached target ttl and qp") {
+		return "COMPLETE"
 	}
 
 	return "ACTIVE"

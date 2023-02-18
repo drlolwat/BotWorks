@@ -31,7 +31,7 @@ func GetConfig() Structs.Configuration {
 	var completeAction int
 
 	for rows.Next() {
-		err = rows.Scan(&dbJar, &dbLogs, &dbUser, &dbPass, &bannedAction)
+		err = rows.Scan(&dbJar, &dbLogs, &dbUser, &dbPass, &bannedAction, &completeAction)
 		ret = Structs.Configuration{
 			DreambotJar:      dbJar,
 			DreambotLogsDir:  dbLogs,
