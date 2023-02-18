@@ -128,7 +128,6 @@ func Begin() {
 								}
 
 								newPid, newLog := Helpers.StartBotFromId(customer, newId)
-
 								err = Helpers.UpdateBotStatus(newId, newPid, newLog)
 								if err != nil {
 									fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
