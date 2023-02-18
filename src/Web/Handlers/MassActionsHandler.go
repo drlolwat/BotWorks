@@ -9,7 +9,6 @@ import (
 	"BotWorks/src/Web/Template"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -49,7 +48,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 						port := proxData[1]
 						username := proxData[2]
 						password := proxData[3]
-						proxName := "New Proxy " + strconv.Itoa(i)
+						proxName := ip + ":" + port
 						_, err := Storage.GetDb().Exec("INSERT INTO proxies (ip, port, username, password, nickname, customer_id) VALUES (?, ?, ?, ?, ?, ?)", ip, port, username, password, proxName, user.Id)
 						if err != nil {
 							fmt.Println(err)

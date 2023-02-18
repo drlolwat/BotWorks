@@ -76,8 +76,9 @@
                                         <td>
                                             <select name="auto_replenish" class="form-control">
                                                 <option value="0" {{ if eq .ScriptData.AutoReplenish 0 }}selected{{ end }}>System Disabled</option>
+                                                {{ $d := .ScriptData }}
                                                 {{ range .Groups }}
-                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                    <option value="{{ .Id }}" {{if eq .Id $d.AutoReplenish }} selected {{end}}>{{ .Name }}</option>
                                                 {{ end }}
                                             </select>
                                         </td>

@@ -225,6 +225,8 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 
 		if botBreaks != "" {
 			args = append(args, "-breaks", botBreaks)
+		} else {
+			args = append(args, "-breaks", "\"\"")
 		}
 
 		execType := "javaw"

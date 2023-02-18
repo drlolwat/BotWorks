@@ -120,8 +120,13 @@ func Begin() {
 							scriptData := Helpers.GetScriptById(scriptId)
 							if scriptData.Id > 0 && scriptData.AutoReplenish > 0 {
 								var newId int
-								err := Storage.GetDb().QueryRow("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ? LIMIT 1 RETURNING id",
-									groupId, scriptId, schedule, scriptData.AutoReplenish, customer).Scan(&newId)
+								err = Storage.GetDb().QueryRow("SELECT id FROM accounts WHERE group_id = ? LIMIT 1", scriptData.AutoReplenish).Scan(&newId)
+
+								if err != nil {
+									fmt.Println("Daemon:", err)
+								}
+
+								_, err := Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ?", groupId, scriptId, schedule, scriptData.AutoReplenish, customer)
 
 								if err != nil {
 									fmt.Println("Daemon:", err)
