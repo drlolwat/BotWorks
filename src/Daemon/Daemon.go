@@ -4,6 +4,7 @@ import (
 	"BotWorks/src/Config"
 	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
@@ -122,8 +123,9 @@ func Begin() {
 								var newId int
 								err = Storage.GetDb().QueryRow("SELECT id FROM accounts WHERE group_id = ? LIMIT 1", scriptData.AutoReplenish).Scan(&newId)
 
-								if err != nil {
-									fmt.Println("Daemon:", err)
+								if err != nil || err == sql.ErrNoRows {
+									fmt.Println("Daemon: No bots are in auto-replenishment group for script:", scriptData.PublicName)
+									continue
 								}
 
 								_, err := Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ?", groupId, scriptId, schedule, scriptData.AutoReplenish, customer)
