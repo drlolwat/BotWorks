@@ -111,10 +111,84 @@ func Init() {
 				fmt.Print(err)
 			}
 		}
-
 	}
 }
 
 func GetDb() *sql.DB {
 	return db
+}
+
+func RunUpdates() {
+	addColumnIfNotExists("scripts", "auto_replenish", "int", 0)
+	addColumnIfNotExists("configuration", "banned_action", "int", 0)
+	addColumnIfNotExists("configuration", "complete_action", "int", 0)
+}
+
+func addColumnIfNotExists(tableName string, columnName string, dataType interface{}, defaultValue interface{}) {
+	// check if the column exists
+	query := fmt.Sprintf("PRAGMA table_info(%s)", tableName)
+	rows, err := db.Query(query)
+	if err != nil {
+		fmt.Printf("UpdateManager: Error checking if column %s exists: %s\n", columnName, err)
+		return
+	}
+	defer rows.Close()
+
+	columnExists := false
+	for rows.Next() {
+		var cid int
+		var name string
+		var columnType string
+		var notNull int
+		var dfltValue sql.NullString
+		var pk int
+		err := rows.Scan(&cid, &name, &columnType, &notNull, &dfltValue, &pk)
+		if err != nil {
+			fmt.Printf("UpdateManager: Error checking if column %s exists: %s\n", columnName, err)
+			return
+		}
+
+		if name == columnName {
+			columnExists = true
+			break
+		}
+	}
+
+	// add the column if it does not exist
+	if !columnExists {
+		var alterQuery string
+		if dataType == "string" || dataType == "TEXT" {
+			alterQuery = fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s TEXT DEFAULT '%v'", tableName, columnName, defaultValue)
+		} else if dataType == "int" || dataType == "INTEGER" {
+			alterQuery = fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s INTEGER DEFAULT %v", tableName, columnName, defaultValue)
+		} else {
+			fmt.Printf("UpdateManager: Unsupported data type: %v\n", dataType)
+			return
+		}
+
+		stmt, err := db.Prepare(alterQuery)
+		if err != nil {
+			fmt.Printf("UpdateManager: Error preparing query to add column %s: %s\n", columnName, err)
+			return
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec()
+		if err != nil {
+			fmt.Printf("UpdateManager: Error adding column %s: %s\n", columnName, err)
+			return
+		}
+
+		fmt.Printf("UpdateManager: Column %s added to table %s with default value %v\n", columnName, tableName, defaultValue)
+
+		// set the default value for all rows
+		updateQuery := fmt.Sprintf("UPDATE %s SET %s = ?", tableName, columnName)
+		_, err = db.Exec(updateQuery, defaultValue)
+		if err != nil {
+			fmt.Printf("UpdateManager: Error setting default value for column %s: %s\n", columnName, err)
+			return
+		}
+
+		fmt.Printf("UpdateManager: Default value for column %s set to %v\n", columnName, defaultValue)
+	}
 }

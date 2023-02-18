@@ -33,8 +33,8 @@
                                         {{ .PublicName }}
                                     </td>
                                     <td>
-                                        <a class='btn btn-primary btn-xs btn-info' href="/scripts?e={{ .Id }}">E</a>
-                                        <a class='btn btn-primary btn-xs btn-danger' href="/scripts?d={{ .Id }}">D</a>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/scripts?e={{ .Id }}"><i class="fas fa-cogs"></i></a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/scripts?d={{ .Id }}"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             {{ end }}
@@ -69,6 +69,19 @@
                                         <input type="text" name="realname" value="{{ .ScriptData.SdnName }}" class="form-control">
                                     </td>
                                 </tr>
+                                    <tr>
+                                        <td>
+                                            Auto Replenishment Group
+                                        </td>
+                                        <td>
+                                            <select name="auto_replenish" class="form-control">
+                                                <option value="0" {{ if eq .ScriptData.AutoReplenish 0 }}selected{{ end }}>System Disabled</option>
+                                                {{ range .Groups }}
+                                                    <option value="{{ .Id }}">{{ .Name }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td>
                                             {{ if .AddingScript }}

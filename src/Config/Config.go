@@ -10,7 +10,7 @@ import (
 func GetConfig() Structs.Configuration {
 	var ret Structs.Configuration
 
-	rows, err := Storage.GetDb().Query("SELECT db_jar,db_logs,db_username,db_password FROM configuration")
+	rows, err := Storage.GetDb().Query("SELECT db_jar,db_logs,db_username,db_password,banned_action,complete_action FROM configuration")
 	if err != nil {
 		fmt.Println(err)
 		return ret
@@ -27,14 +27,18 @@ func GetConfig() Structs.Configuration {
 	var dbLogs string
 	var dbUser string
 	var dbPass string
+	var bannedAction int
+	var completeAction int
 
 	for rows.Next() {
-		err = rows.Scan(&dbJar, &dbLogs, &dbUser, &dbPass)
+		err = rows.Scan(&dbJar, &dbLogs, &dbUser, &dbPass, &bannedAction)
 		ret = Structs.Configuration{
 			DreambotJar:      dbJar,
 			DreambotLogsDir:  dbLogs,
 			DreambotUsername: dbUser,
 			DreambotPassword: dbPass,
+			BannedAction:     bannedAction,
+			CompleteAction:   completeAction,
 		}
 	}
 

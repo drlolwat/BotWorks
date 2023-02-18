@@ -2,6 +2,7 @@ package main
 
 import (
 	"BotWorks/src/Daemon"
+	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
 	"BotWorks/src/Web/Handlers"
 	"BotWorks/src/Web/Handlers/Actions"
@@ -64,9 +65,11 @@ func main() {
 	println(" | |_) | (_) | |_  | |_) | |_| | (_| | (_| | |_| |")
 	println(" |____/ \\___/ \\__| |____/ \\__,_|\\__,_|\\__,_|\\__, |")
 	println("                                             __/ |")
-	println("   Version v2.0, by lolwat                   |___/ ")
+	println("   Version " + Helpers.Version + ", by lolwat                   |___/ ")
 	println()
 	println()
+
+	Storage.RunUpdates()
 
 	println("Server is now listening on port 80")
 

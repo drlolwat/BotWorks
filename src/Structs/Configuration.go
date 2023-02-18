@@ -5,4 +5,6 @@ type Configuration struct {
 	DreambotLogsDir  string
 	DreambotUsername string
 	DreambotPassword string
+	BannedAction     int
+	CompleteAction   int
 }

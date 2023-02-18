@@ -13,3 +13,4 @@
 /bin/BotBuddy.db
 /bin/BotBuddy.db-wal
 /bin/BotBuddy-db-shm
+/bin/*

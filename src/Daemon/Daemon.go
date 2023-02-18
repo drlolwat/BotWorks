@@ -28,7 +28,7 @@ func Begin() {
 			botsDetected := 0
 			botsRestarted := 0
 
-			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile FROM accounts")
+			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id FROM accounts")
 			if err != nil {
 				continue
 			}
@@ -40,8 +40,10 @@ func Begin() {
 				var pid int
 				var customer int
 				var logfile string
+				var scriptId int
+				var groupId int
 
-				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile)
+				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId)
 				if err != nil {
 					continue
 				}
@@ -56,8 +58,68 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
-						// here we should be checking if other bots of the same schedule are running
-						// starting it if required
+						if Helpers.GetBotStatus(id) != "BANNED" {
+							// restart any bots not running their intended script
+							file := config.DreambotLogsDir + "/" + logfile
+							fileData := Helpers.TailFile(file, 30)
+							if strings.Contains(fileData, "[SYSTEM INFO]") {
+								// Metrics here.
+								// Restart the bot if its not running a script
+								if strings.Contains(fileData, "Script Running: None") {
+									Helpers.KillBot(id, customer)
+									time.Sleep(650 * time.Millisecond)
+									newPid, newLog := Helpers.StartBotFromId(customer, id)
+									err := Helpers.UpdateBotStatus(id, newPid, newLog)
+									if err != nil {
+										fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+										Helpers.KillBot(id, customer)
+										continue
+									}
+									botsRestarted++
+								}
+							}
+						} else {
+							if config.BannedAction != 0 {
+								Helpers.KillBot(id, customer)
+								if config.BannedAction == -1 {
+									_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
+									if err != nil {
+										fmt.Println("Daemon:", err)
+									}
+
+								} else if config.BannedAction == -2 {
+									// something but i forgot
+								} else if config.BannedAction > 0 {
+									_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", config.BannedAction, id)
+									if err != nil {
+										fmt.Println("Daemon:", err)
+									}
+								}
+								botsClosed++
+							}
+
+							scriptData := Helpers.GetScriptById(scriptId)
+							if scriptData.Id > 0 && scriptData.AutoReplenish > 0 {
+								var newId int
+								err := Storage.GetDb().QueryRow("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ? LIMIT 1 RETURNING id",
+									groupId, scriptId, schedule, scriptData.AutoReplenish, customer).Scan(&newId)
+
+								if err != nil {
+									fmt.Println("Daemon:", err)
+								}
+
+								newPid, newLog := Helpers.StartBotFromId(customer, newId)
+
+								err = Helpers.UpdateBotStatus(newId, newPid, newLog)
+								if err != nil {
+									fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+									Helpers.KillBot(id, customer)
+								}
+
+								botsStarted++
+							}
+						}
+
 						botsDetected++
 					}
 				}
@@ -92,27 +154,6 @@ func Begin() {
 						}
 						time.Sleep(5 * time.Second)
 						continue
-					}
-				}
-
-				// restart any bots not running their intended script
-				file := config.DreambotLogsDir + "/" + logfile
-				fileData := Helpers.TailFile(file, 30)
-
-				//11:26:34 PM: [INFO] [SYSTEM INFO] DreamBot Version: 3.14.6.7 / Script Running: None / Java: Oracle Corporation version 1.8.0_341 / OS: Windows Server 2016 version 10.0 / Memory: 298.16MB used out of 702.00MB total
-				if strings.Contains(fileData, "[SYSTEM INFO]") {
-					// Metrics here.
-					if strings.Contains(fileData, "Script Running: None") {
-						Helpers.KillBot(id, customer)
-						time.Sleep(650 * time.Millisecond)
-						newPid, newLog := Helpers.StartBotFromId(customer, id)
-						err := Helpers.UpdateBotStatus(id, newPid, newLog)
-						if err != nil {
-							fmt.Println("Big error issue restarting bot, could not update status!")
-							Helpers.KillBot(id, customer)
-							continue
-						}
-						botsRestarted++
 					}
 				}
 			}

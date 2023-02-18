@@ -11,7 +11,7 @@
                 <div class="section-block" id="c-nav">
                 </div>
             </div>
-            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
                 <div class="card">
 
                     <div class="card-header">
@@ -23,6 +23,7 @@
                             <thead>
                             <tr>
                                 <th>Account name</th>
+                                <th>Proxied</th>
                                 <th>Options</th>
                             </tr>
                             </thead>
@@ -30,9 +31,10 @@
                                 {{ range .Bots }}
                                     <tr>
                                         <td>{{ .AccountName }}</td>
+                                        <td>{{ if gt .ProxyId 0 }}Yes{{else}}No{{end}}</td>
                                         <td>
-                                            <a class='btn btn-primary btn-xs btn-info' href="/accounts?e={{ .AccountId }}">E</a>
-                                            <a class='btn btn-primary btn-xs btn-danger' href="/accounts?d={{ .AccountId }}">D</a>
+                                            <a class='btn btn-primary btn-xs btn-info' href="/accounts?e={{ .AccountId }}"><i class="fas fa-cogs"></i></a>
+                                            <a class='btn btn-primary btn-xs btn-danger' href="/accounts?d={{ .AccountId }}"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                                 {{ end }}

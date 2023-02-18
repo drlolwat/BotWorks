@@ -40,10 +40,11 @@ func ScriptsHandler(w http.ResponseWriter, r *http.Request) {
 
 			nickname := r.FormValue("nickname")
 			sdnName := r.FormValue("realname")
+			autoReplenish := r.FormValue("auto_replenish")
 
 			if r.PostForm.Has("update") && r.FormValue("id") != "" {
 				scriptId := r.FormValue("id")
-				_, err := Storage.GetDb().Exec("UPDATE scripts SET name = ?, backend_name = ? WHERE id = ?", nickname, sdnName, scriptId)
+				_, err := Storage.GetDb().Exec("UPDATE scripts SET name = ?, backend_name = ?, auto_replenish = ? WHERE id = ?", nickname, sdnName, autoReplenish, scriptId)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -51,7 +52,7 @@ func ScriptsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostForm.Has("add") {
-				_, err := Storage.GetDb().Exec("INSERT INTO scripts (name, backend_name) VALUES (?, ?)", nickname, sdnName)
+				_, err := Storage.GetDb().Exec("INSERT INTO scripts (name, backend_name, auto_replenish) VALUES (?, ?, ?)", nickname, sdnName, autoReplenish)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -72,13 +73,14 @@ func ScriptsHandler(w http.ResponseWriter, r *http.Request) {
 
 	scriptsPageData := map[string]interface{}{
 		"Scripts":        Helpers.GetScripts(),
+		"Groups":         Helpers.GetGroups(user.Id),
 		"AddingScript":   r.URL.Query().Get("a"),
 		"EditingScript":  r.URL.Query().Get("e"),
 		"DeletingScript": r.URL.Query().Get("d"),
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,name,backend_name FROM scripts WHERE id = ?", r.URL.Query().Get("e"))
+		rows, err := Storage.GetDb().Query("SELECT id,name,backend_name,auto_replenish FROM scripts WHERE id = ?", r.URL.Query().Get("e"))
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -95,25 +97,28 @@ func ScriptsHandler(w http.ResponseWriter, r *http.Request) {
 			var id int
 			var name string
 			var sdnName string
+			var replenishment int
 
-			err = rows.Scan(&id, &name, &sdnName)
+			err = rows.Scan(&id, &name, &sdnName, &replenishment)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 
 			scriptsPageData["ScriptData"] = Structs.ScriptData{
-				Id:         id,
-				PublicName: name,
-				SdnName:    sdnName,
+				Id:            id,
+				PublicName:    name,
+				SdnName:       sdnName,
+				AutoReplenish: replenishment,
 			}
 		}
 
 	} else if r.URL.Query().Has("a") {
 		scriptsPageData["ScriptData"] = Structs.ScriptData{
-			Id:         0,
-			PublicName: "New script",
-			SdnName:    "Name on SDN or local script",
+			Id:            0,
+			PublicName:    "New script",
+			SdnName:       "Name on SDN or local script",
+			AutoReplenish: 0,
 		}
 	}
 

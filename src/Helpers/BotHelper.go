@@ -63,9 +63,11 @@ func GetBotStatus(botId int) string {
 
 	if strings.Contains(lastTen, "members_world") {
 		return "BOND"
-	} else if strings.Contains(lastTen, "disabled") {
-		if strings.Contains(lastTen, "severity") {
+	} else if strings.Contains(lastTen, "severity") {
+		if strings.Contains(lastTen, "disabled") {
 			return "BANNED"
+		} else if strings.Contains(lastTen, "locked") {
+			return "LOCKED"
 		}
 	}
 

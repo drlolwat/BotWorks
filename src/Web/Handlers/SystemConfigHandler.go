@@ -47,9 +47,22 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(err)
 			}
 		}
-	}
+	} else if r.PostForm.Has("update_system") {
+		if r.FormValue("banned_action") != "" && r.FormValue("complete_action") != "" {
+			fmt.Println(r.PostForm)
+			action := r.FormValue("banned_action")
+			completeAction := r.FormValue("complete_action")
 
-	if r.PostForm.Has("oh_shit_button") {
+			fmt.Println(action, completeAction)
+			fmt.Println(Config.GetConfig().BannedAction)
+			fmt.Println(Config.GetConfig().CompleteAction)
+
+			_, err := Storage.GetDb().Exec("UPDATE configuration SET banned_action = ?", action, completeAction)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	} else if r.PostForm.Has("oh_shit_button") {
 		_, err := Storage.GetDb().Exec("DELETE FROM account_groups WHERE id > 0")
 
 		if err != nil {
@@ -103,6 +116,7 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	systemData := map[string]interface{}{
 		"Config": Config.GetConfig(),
+		"Groups": Helpers.GetGroups(user.Id),
 	}
 
 	err := Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", headerInfo)

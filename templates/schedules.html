@@ -33,8 +33,8 @@
                                         {{ .Name }} ({{ .TotalUsers }})
                                     </td>
                                     <td>
-                                        <a class='btn btn-primary btn-xs btn-info' href="/schedules?e={{ .Id }}">E</a>
-                                        <a class='btn btn-primary btn-xs btn-danger' href="/schedules?d={{ .Id }}">D</a>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/schedules?e={{ .Id }}"><i class="fas fa-cogs"></i></a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/schedules?d={{ .Id }}"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             {{ end }}

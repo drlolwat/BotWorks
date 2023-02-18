@@ -19,11 +19,12 @@ const (
 
 var key = []byte("AES_LOLWAT_KEYBB")
 var authenticated = false
+var Version = "2.0.4"
 
 func License() bool {
 	licenseKey, err := readLicenseKey()
 	if err != nil {
-		fmt.Println("Your license.key file is missing. It should be next to your BotWorks.exe file.")
+		fmt.Println("Your license.key file is missing. It should be next to your BotBuddy.exe file.")
 	}
 
 	conn, err := net.Dial("tcp", serverAddress)

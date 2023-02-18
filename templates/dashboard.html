@@ -88,8 +88,9 @@
                                             {{ end }}
                                         </td>
                                         <td>
-                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
-                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-danger'><i class="fas fa-ban"></i></a>
+                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-primary'><i class="fas fa-tv"></i></a>
+                                            <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'><i class="fas fa-cogs"></i></a>
                                         </td>
                                     </tr>
                                 {{ end }}
@@ -134,8 +135,9 @@
                                             {{ end }}
                                         </td>
                                         <td>
-                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-warning'>Stop</a>
-                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Logs</a>
+                                            <a href="/stop/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-danger'><i class="fas fa-ban"></i></a>
+                                            <a href="/logs/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-primary'><i class="fas fa-tv"></i></a>
+                                            <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'><i class="fas fa-cogs"></i></a>
                                         </td>
                                     </tr>
                                 {{ end }}
@@ -188,8 +190,9 @@
                                   <td>{{ .AccountName }}</td>
                                   <td>{{ .Script }}</td>
                                   <td>
-                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
-                                      <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
+                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'><i class="fas fa-check"></i></a>
+                                      <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'><i class="fas fa-cogs"></i></a>
+                                      <a href="/accounts?d={{ .AccountId }}" class='btn btn-primary btn-xs btn-danger'><i class="fas fa-trash"></i></a>
                                   </td>
                               </tr>
                               {{ end }}
@@ -217,8 +220,9 @@
                                   <td>{{ .AccountName }}</td>
                                   <td>{{ .Script }}</td>
                                   <td>
-                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'>Start</a>
-                                      <a href="/accounts/edit/{{ .AccountId }}" class='btn btn-primary btn-xs btn-info'>Modify</a>
+                                      <a href="/start/id/{{ .AccountId }}" class='btn btn-primary btn-xs btn-success'><i class="fas fa-check"></i></a>
+                                      <a href="/accounts?e={{ .AccountId }}" class='btn btn-primary btn-xs btn-info'><i class="fas fa-cogs"></i></a>
+                                      <a href="/accounts?d={{ .AccountId }}" class='btn btn-primary btn-xs btn-danger'><i class="fas fa-trash"></i></a>
                                   </td>
                               </tr>
                               {{ end }}

@@ -39,7 +39,6 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("name") != "" {
 
 			nickname := r.FormValue("name")
-
 			if r.PostForm.Has("update") && r.FormValue("id") != "" {
 				groupId := r.FormValue("id")
 				_, err := Storage.GetDb().Exec("UPDATE account_groups SET name = ? WHERE id = ? AND customer_id = ?", nickname, groupId, user.Id)

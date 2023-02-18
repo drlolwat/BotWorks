@@ -33,8 +33,8 @@
                                         {{ .Name }} ({{ .BotsCount }})
                                     </td>
                                     <td>
-                                        <a class='btn btn-primary btn-xs btn-info' href="/groups?e={{ .Id }}">E</a>
-                                        <a class='btn btn-primary btn-xs btn-danger' href="/groups?d={{ .Id }}">D</a>
+                                        <a class='btn btn-primary btn-xs btn-info' href="/groups?e={{ .Id }}"><i class="fas fa-cogs"></i></a>
+                                        <a class='btn btn-primary btn-xs btn-danger' href="/groups?d={{ .Id }}"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             {{ end }}
@@ -52,7 +52,8 @@
                         </div>
                         <div class="card-body">
                             <form method="post">
-                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" class="form-control" value="{{ .GroupData.Name }}" style="width:100px;display:inline;"> group. <br /> <br />
+                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" class="form-control" value="{{ .GroupData.Name }}" style="width:100px;display:inline;"> group.<br /> <br />
+
                                 {{ if .AddingGroup }}
                                     <input type='submit' name='add' value='Add group' class='form-control' style="width:20%">
                                 {{ else if .EditingGroup }}
