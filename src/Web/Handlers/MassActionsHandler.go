@@ -7,8 +7,10 @@ import (
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
 	"BotWorks/src/Web/Template"
+	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -61,7 +63,8 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.PostForm.Has("add_accounts") {
 		if r.FormValue("accounts") != "" && r.FormValue("script_id") != "" &&
-			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" {
+			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" &&
+			r.FormValue("proxies") != "" {
 
 			breaks := ""
 			params := ""
@@ -79,6 +82,12 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 				params = r.FormValue("params")
 			}
 
+			proxyOption, err := strconv.Atoi(r.FormValue("proxies"))
+
+			if err != nil {
+				fmt.Println(err)
+			}
+
 			split := strings.Split(r.FormValue("accounts"), "\r\n")
 
 			if len(split) > 0 {
@@ -86,11 +95,32 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					accData := strings.Split(data, ":")
 					username := accData[0]
 					password := accData[1]
+					proxyId := -1
 
-					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, "-1", -1, script, params, user.Id, "", 0, grp, breaks, sched, fps)
+					if proxyOption == 1 {
+						err = Storage.GetDb().QueryRow("SELECT id FROM proxies WHERE customer_id = ? AND bans = 0 AND id NOT IN (SELECT proxy_id FROM accounts WHERE customer_id = ?)", user.Id, user.Id).Scan(&proxyId)
+
+						if err != nil || err == sql.ErrNoRows {
+							proxyId = -1
+							proxyOption = 0
+							fmt.Println("No available unused proxies in the system")
+							break
+						}
+
+					} else if proxyOption == 2 {
+						err = Storage.GetDb().QueryRow("SELECT * FROM proxies WHERE customer_id = ? AND id IN (SELECT id FROM proxies ORDER BY RANDOM() LIMIT 1)", user.Id).Scan(&proxyId)
+
+						if err != nil || err == sql.ErrNoRows {
+							proxyId = -1
+							proxyOption = 0
+							fmt.Println("No available proxies in the system")
+							break
+						}
+					}
+
+					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, "-1", proxyId, script, params, user.Id, "", 0, grp, breaks, sched, fps)
 					if err != nil {
 						fmt.Println(err)
-						return
 					}
 				}
 			}

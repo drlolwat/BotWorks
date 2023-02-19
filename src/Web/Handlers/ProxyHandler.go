@@ -83,7 +83,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,ip,port,username,password,nickname FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
+		rows, err := Storage.GetDb().Query("SELECT id,ip,port,username,password,nickname,bans FROM proxies WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -103,8 +103,9 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 			var username string
 			var password string
 			var nickname string
+			var bans int
 
-			err = rows.Scan(&id, &ip, &port, &username, &password, &nickname)
+			err = rows.Scan(&id, &ip, &port, &username, &password, &nickname, &bans)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -118,6 +119,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 				Username:  username,
 				Password:  password,
 				Accounts:  0,
+				Bans:      bans,
 			}
 		}
 
@@ -130,6 +132,7 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 			Username:  "username",
 			Password:  "password",
 			Accounts:  0,
+			Bans:      0,
 		}
 	}
 

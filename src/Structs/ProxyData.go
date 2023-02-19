@@ -8,4 +8,5 @@ type ProxyData struct {
 	Username  string
 	Password  string
 	Accounts  int
+	Bans      int
 }

@@ -2,6 +2,8 @@ package Helpers
 
 import (
 	"bufio"
+	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -48,4 +50,21 @@ func TailFile(filepath string, lines int) string {
 	}
 
 	return strings.Join(lastLines, "")
+}
+
+func ReadFile(path string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Print(err)
+		return ""
+	}
+
+	return string(content)
 }

@@ -6,6 +6,7 @@ package Helpers
 import (
 	"fmt"
 	"github.com/creack/pty"
+	"image"
 	"os"
 	"os/exec"
 	"syscall"
@@ -69,4 +70,22 @@ func SetWindowTitle(title string) error {
 		return err
 	}
 	return nil
+}
+
+func CaptureWindowScreenshot(pid uint32) (*image.RGBA, error) {
+	return nil, fmt.Errorf("not currently supported on Linux")
+}
+
+func max(a, b int16) int16 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func min(a, b int16) int16 {
+	if a < b {
+		return a
+	}
+	return b
 }

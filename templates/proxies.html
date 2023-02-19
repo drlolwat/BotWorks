@@ -23,6 +23,7 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Bans</th>
                                 <th>Options</th>
                             </tr>
                             </thead>
@@ -31,6 +32,9 @@
                                     <tr>
                                         <td>
                                             {{ .Name }} ({{ .Accounts }})
+                                        </td>
+                                        <td>
+                                            {{ .Bans }}
                                         </td>
                                         <td>
                                             <a class='btn btn-primary btn-xs btn-info' href="/proxies?e={{ .Id }}"><i class="fas fa-cogs"></i></a>

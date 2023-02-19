@@ -28,7 +28,7 @@ func Begin() {
 			botsDetected := 0
 			botsRestarted := 0
 
-			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id,breaks,script_params FROM accounts")
+			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id,breaks,script_params,proxy_id FROM accounts")
 			if err != nil {
 				continue
 			}
@@ -44,8 +44,9 @@ func Begin() {
 				var groupId int
 				var breaks string
 				var params string
+				var proxy int
 
-				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId, &breaks, &params)
+				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId, &breaks, &params, &proxy)
 				if err != nil {
 					continue
 				}
@@ -114,6 +115,11 @@ func Begin() {
 										fmt.Println("Daemon:", err)
 									}
 								}
+
+								if proxy > 0 {
+									_, err = Storage.GetDb().Exec("UPDATE proxies SET bans = bans + 1 WHERE id = ?", proxy)
+								}
+
 								fmt.Println("Daemon:", name, "has been tagged as banned")
 								botsClosed++
 							}

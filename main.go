@@ -40,6 +40,7 @@ func main() {
 	r.HandleFunc("/system", Handlers.SystemConfigHandler)
 	r.HandleFunc("/scripts", Handlers.ScriptsHandler)
 	r.HandleFunc("/massactions", Handlers.MassActionsHandler)
+	r.HandleFunc("/logs", Handlers.LogsHandler)
 
 	// pages that are essentially actions and redirects
 	r.HandleFunc("/logout", Actions.LogoutAction)

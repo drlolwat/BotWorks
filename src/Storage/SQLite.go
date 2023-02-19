@@ -122,6 +122,7 @@ func RunUpdates() {
 	addColumnIfNotExists("scripts", "auto_replenish", "int", 0)
 	addColumnIfNotExists("configuration", "banned_action", "int", 0)
 	addColumnIfNotExists("configuration", "complete_action", "int", 0)
+	addColumnIfNotExists("proxies", "bans", "int", 0)
 }
 
 func addColumnIfNotExists(tableName string, columnName string, dataType interface{}, defaultValue interface{}) {

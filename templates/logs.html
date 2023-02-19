@@ -1,0 +1,33 @@
+<style type="text/css">
+  td {
+    padding: 3.2px 0px;
+  }
+</style>
+
+<div class="dashboard-wrapper">
+  <div class="container-fluid dashboard-content">
+    <div class="row">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="section-block" id="c-nav">
+        </div>
+      </div>
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+        <div class="card">
+
+          <div class="card-header">
+            Showing the latest log file for the selected account
+          </div>
+
+          <div class="card-body">
+            <textarea class="form-control" style="height:688px;" id="log">{{ .LogFile }}</textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var textarea = document.getElementById('log');
+  textarea.scrollTop = textarea.scrollHeight;
+</script>

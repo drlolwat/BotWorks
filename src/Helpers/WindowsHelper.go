@@ -65,3 +65,7 @@ func SetWindowTitle(title string) error {
 	}
 	return nil
 }
+
+func CaptureWindowScreenshot(pid uint32) (*image.RGBA, error) {
+	return nil, fmt.Errorf("not currently supported")
+}
