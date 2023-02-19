@@ -29,15 +29,17 @@ func StartBotByIdAction(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 
-	if id > 0 {
-		botPid, logFile := Helpers.StartBotFromId(user.Id, id)
-		err := Helpers.UpdateBotStatus(id, botPid, logFile)
-		if err != nil {
-			fmt.Println(err)
-			http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	go func() {
+		if id > 0 {
+			botPid, logFile := Helpers.StartBotFromId(user.Id, id)
+			err := Helpers.UpdateBotStatus(id, botPid, logFile)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			return
 		}
-		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
-		return
-	}
+	}()
+
+	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 }
