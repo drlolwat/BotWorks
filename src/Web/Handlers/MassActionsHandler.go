@@ -98,17 +98,43 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					proxyId := -1
 
 					if proxyOption == 1 {
-						err = Storage.GetDb().QueryRow("SELECT id FROM proxies WHERE customer_id = ? AND id NOT IN (SELECT proxy_id FROM accounts WHERE customer_id = ?)", user.Id, user.Id).Scan(&proxyId)
+						res, err := Storage.GetDb().Query("SELECT id FROM proxies WHERE customer_id = ? AND bans = 0", user.Id)
 
-						if err != nil || err == sql.ErrNoRows {
-							proxyId = -1
-							proxyOption = 0
-							fmt.Println("No available unused proxies in the system")
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						for res.Next() {
+							var dbId int
+							err = res.Scan(&dbId)
+
+							if err != nil {
+								break
+							}
+
+							if dbId > 0 {
+								var used int
+								err = Storage.GetDb().QueryRow("SELECT * FROM accounts WHERE proxy_id = ?", dbId).Scan(&used)
+
+								if err != nil || err == sql.ErrNoRows {
+									proxyId = dbId
+									break
+								}
+							}
+						}
+
+						err = res.Close()
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						if proxyId <= 0 {
+							fmt.Println("No availalble unused proxies in the system")
 							break
 						}
 
 					} else if proxyOption == 2 {
-						err = Storage.GetDb().QueryRow("SELECT * FROM proxies WHERE customer_id = ? AND id IN (SELECT id FROM proxies ORDER BY RANDOM() LIMIT 1)", user.Id).Scan(&proxyId)
+						err = Storage.GetDb().QueryRow("SELECT * FROM proxies WHERE customer_id = ?", user.Id).Scan(&proxyId)
 
 						if err != nil || err == sql.ErrNoRows {
 							proxyId = -1
