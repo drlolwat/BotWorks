@@ -147,7 +147,7 @@ func Begin() {
 				if pid > 0 {
 					botStatus := Helpers.GetBotStatus(id)
 					if currentHour == endHour && currentMin >= endMin {
-						if botStatus == "BREAK" || (currentMin > (endMin+15) || currentMin+15 > 60) { //TODO store a queue of bots to close and how often to recheck
+						if botStatus == "BREAK" || (currentMin > (endMin+15) || currentMin+1 >= 60) { //TODO store a queue of bots to close and how often to recheck
 							botsClosed++
 							Helpers.KillBot(id, customer)
 						}
