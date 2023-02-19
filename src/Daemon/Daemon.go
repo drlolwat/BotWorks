@@ -28,7 +28,7 @@ func Begin() {
 			botsDetected := 0
 			botsRestarted := 0
 
-			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id,breaks FROM accounts")
+			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id,breaks,script_params FROM accounts")
 			if err != nil {
 				continue
 			}
@@ -43,13 +43,13 @@ func Begin() {
 				var scriptId int
 				var groupId int
 				var breaks string
+				var params string
 
-				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId, &breaks)
+				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId, &breaks, &params)
 				if err != nil {
 					continue
 				}
 
-				// check if any bots need to be marked as offline
 				if pid > 0 {
 					botStatus := Helpers.GetBotStatus(id)
 					if !Helpers.IsBotRunning(pid) {
@@ -75,7 +75,7 @@ func Begin() {
 										}
 									}
 
-									if Helpers.Replenish(scriptId, groupId, schedule, customer) {
+									if Helpers.Replenish(scriptId, groupId, schedule, customer, params) {
 										botsStarted++
 									}
 
@@ -84,23 +84,17 @@ func Begin() {
 								}
 							} else {
 								// restart any bots not running their intended script
-								file := config.DreambotLogsDir + "/" + logfile
-								fileData := Helpers.TailFile(file, 30)
-								if strings.Contains(fileData, "[SYSTEM INFO]") {
-									// Metrics here.
-									// Restart the bot if its not running a script
-									if strings.Contains(fileData, "Script Running: None") {
+								if botStatus == "NOSCRIPT" {
+									Helpers.KillBot(id, customer)
+									time.Sleep(650 * time.Millisecond)
+									newPid, newLog := Helpers.StartBotFromId(customer, id)
+									err := Helpers.UpdateBotStatus(id, newPid, newLog)
+									if err != nil {
+										fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
 										Helpers.KillBot(id, customer)
-										time.Sleep(650 * time.Millisecond)
-										newPid, newLog := Helpers.StartBotFromId(customer, id)
-										err := Helpers.UpdateBotStatus(id, newPid, newLog)
-										if err != nil {
-											fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-											Helpers.KillBot(id, customer)
-											continue
-										}
-										botsRestarted++
+										continue
 									}
+									botsRestarted++
 								}
 							}
 						} else {
@@ -124,7 +118,7 @@ func Begin() {
 								botsClosed++
 							}
 
-							if Helpers.Replenish(scriptId, groupId, schedule, customer) {
+							if Helpers.Replenish(scriptId, groupId, schedule, customer, params) {
 								botsStarted++
 							}
 						}

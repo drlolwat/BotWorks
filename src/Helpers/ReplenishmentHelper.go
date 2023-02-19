@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func Replenish(scriptId int, groupId int, schedule int, customer int) bool {
+func Replenish(scriptId int, groupId int, schedule int, customer int, params string) bool {
 	scriptData := GetScriptById(scriptId)
 	if scriptData.Id > 0 && scriptData.AutoReplenish > 0 {
 		var newId int
@@ -17,7 +17,7 @@ func Replenish(scriptId int, groupId int, schedule int, customer int) bool {
 			return false
 		}
 
-		_, err = Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ?", groupId, scriptId, schedule, scriptData.AutoReplenish, customer)
+		_, err = Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ?, script_params = ? WHERE pid = 0 AND group_id = ? AND customer_id = ?", groupId, scriptId, schedule, params, scriptData.AutoReplenish, customer)
 
 		if err != nil {
 			fmt.Println("Daemon:", err)
