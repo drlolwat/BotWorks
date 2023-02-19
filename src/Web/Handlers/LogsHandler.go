@@ -60,7 +60,6 @@ func LogsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		filepath := config.DreambotLogsDir + "/" + fileName
-		fmt.Println(filepath)
 		logFile = Helpers.ReadFile(filepath)
 	}
 

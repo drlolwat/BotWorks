@@ -98,7 +98,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					proxyId := -1
 
 					if proxyOption == 1 {
-						err = Storage.GetDb().QueryRow("SELECT id FROM proxies WHERE customer_id = ? AND bans = 0 AND id NOT IN (SELECT proxy_id FROM accounts WHERE customer_id = ?)", user.Id, user.Id).Scan(&proxyId)
+						err = Storage.GetDb().QueryRow("SELECT id FROM proxies WHERE customer_id = ? AND id NOT IN (SELECT proxy_id FROM accounts WHERE customer_id = ?)", user.Id, user.Id).Scan(&proxyId)
 
 						if err != nil || err == sql.ErrNoRows {
 							proxyId = -1
