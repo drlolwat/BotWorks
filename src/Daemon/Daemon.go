@@ -28,7 +28,7 @@ func Begin() {
 			botsDetected := 0
 			botsRestarted := 0
 
-			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id FROM accounts")
+			rows, err := Storage.GetDb().Query("SELECT id,name,schedule,pid,customer_id,logfile,script_id,group_id,breaks FROM accounts")
 			if err != nil {
 				continue
 			}
@@ -42,8 +42,9 @@ func Begin() {
 				var logfile string
 				var scriptId int
 				var groupId int
+				var breaks string
 
-				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId)
+				err := rows.Scan(&id, &name, &schedule, &pid, &customer, &logfile, &scriptId, &groupId, &breaks)
 				if err != nil {
 					continue
 				}
@@ -147,7 +148,7 @@ func Begin() {
 				if pid > 0 {
 					botStatus := Helpers.GetBotStatus(id)
 					if currentHour == endHour && currentMin >= endMin {
-						if botStatus == "BREAK" || (currentMin > (endMin+15) || currentMin+1 >= 60) { //TODO store a queue of bots to close and how often to recheck
+						if botStatus == "BREAK" || currentMin+1 >= 60 || len(breaks) <= 2 { //TODO store a queue of bots to close and how often to recheck
 							botsClosed++
 							Helpers.KillBot(id, customer)
 						}
