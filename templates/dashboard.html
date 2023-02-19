@@ -77,6 +77,10 @@
                                                 <b style="color:red;">Needs Bond</b>,
                                             {{ else if eq .Status "BANNED" }}
                                                 <u><b style="color:red;">Banned</b></u>,
+                                            {{ else if eq .Status "LOCKED" }}
+                                                <u><b style="color:red;">Locked</b></u>,
+                                            {{ else if eq .Status "COMPLETE" }}
+                                            <u style="color:green;font-weight:bold;">Complete</u>,
                                             {{ else if eq .Status "ACTIVE" }}
                                                 <span style="color:green">Active</span>,
                                             {{ end }}
@@ -124,6 +128,10 @@
                                                 <b style="color:red;">Needs Bond</b>,
                                             {{ else if eq .Status "BANNED" }}
                                                 <u><b style="color:red;">Banned</b></u>,
+                                            {{ else if eq .Status "LOCKED" }}
+                                            <u><b style="color:red;">Locked</b></u>,
+                                            {{ else if eq .Status "COMPLETE" }}
+                                            <u style="color:green;font-weight:bold;">Complete</u>,
                                             {{ else if eq .Status "ACTIVE" }}
                                                 <span style="color:green">Active</span>,
                                             {{ end }}
@@ -174,8 +182,13 @@
               <div class="card-body">
                   <div class="tab-content" id="myTabContent">
                       <div class="tab-pane fade show active" id="card-90" role="tabpanel" aria-labelledby="card-tab-90">
+
+                          <form method="post" action="/start/all">
+                              <input type="submit" class="btn btn-primary btn-xs btn-success" value="Start all instances in this group" style="display:inline;"> staggered by
+                              <input type="number" name="delay" value="0" class="form-control" style="width:65px;display:inline;"> minutes
+                          </form>
+
                           <p class="card-text">
-                              <a class='btn btn-primary btn-xs btn-success' href='/start/all' role='button'>Start all instances in this group</a>
                           <table width='100%' id="offlineAccounts" name="offlineAccounts" class="display">
                               <thead>
                               <tr>
@@ -203,8 +216,14 @@
 
                       {{ range .GroupData }}
                       <div class="tab-pane fade" id="card-9{{ .Id }}" role="tabpanel" aria-labelledby="card-tab-9{{ .Id }}">
+
+                          <form method="post" action="/start/group/{{ .Id }}">
+                              <input type="submit" class="btn btn-primary btn-xs btn-success" value="Start all instances in this group" style="display:inline;"> staggered by
+                              <input type="number" name="delay" value="0" class="form-control" style="width:65px;display:inline;"> minutes
+                          </form>
+
                           <p class="card-text">
-                              <a class='btn btn-primary btn-xs btn-success' href='/start/group/{{ .Id }}' role='button'>Start all instances in this group</a>
+
                           <table width='100%' id="accountsTable-9{{ .Id }}" name="accountsTable-9{{ .Id }}" class="display">
                               <thead>
                               <tr>

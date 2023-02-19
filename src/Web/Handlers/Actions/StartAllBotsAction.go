@@ -5,10 +5,14 @@ import (
 	"BotWorks/src/Storage"
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func StartAllBotsAction(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
 	if !Helpers.IsSessionValid(r) {
 		http.Redirect(w, r, "/", http.StatusForbidden)
 		return
@@ -29,7 +33,18 @@ func StartAllBotsAction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Helpers.StartFromDbRows(rows, user.Id)
+	delay := 0
+
+	if r.PostForm.Has("delay") {
+		delay, err = strconv.Atoi(r.FormValue("delay"))
+	}
+
+	if err != nil {
+		delay = 0
+		fmt.Print(err)
+	}
+
+	Helpers.StartFromDbRows(rows, user.Id, delay)
 	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 	return
 }

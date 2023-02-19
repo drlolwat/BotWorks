@@ -23,6 +23,11 @@ func init() {
 }
 
 func main() {
+	err := Helpers.SetWindowTitle("BotBuddy, v" + Helpers.Version)
+	if err != nil {
+		// silent
+	}
+
 	r := mux.NewRouter()
 
 	// pages with templates
@@ -65,7 +70,7 @@ func main() {
 	println(" | |_) | (_) | |_  | |_) | |_| | (_| | (_| | |_| |")
 	println(" |____/ \\___/ \\__| |____/ \\__,_|\\__,_|\\__,_|\\__, |")
 	println("                                             __/ |")
-	println("   Version " + Helpers.Version + ", by lolwat                   |___/ ")
+	println("   Version " + Helpers.Version + ", by lolwat                  |___/ ")
 	println()
 	println()
 

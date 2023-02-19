@@ -4,7 +4,6 @@ import (
 	"BotWorks/src/Config"
 	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
-	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
@@ -51,6 +50,7 @@ func Begin() {
 
 				// check if any bots need to be marked as offline
 				if pid > 0 {
+					botStatus := Helpers.GetBotStatus(id)
 					if !Helpers.IsBotRunning(pid) {
 						_, err = Storage.GetDb().Exec("UPDATE accounts SET pid = 0 WHERE pid = ?", pid)
 						if err != nil {
@@ -59,7 +59,6 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
-						botStatus := Helpers.GetBotStatus(id)
 						if botStatus != "BANNED" {
 							if botStatus == "COMPLETE" {
 								if config.CompleteAction != 0 {
@@ -74,7 +73,13 @@ func Begin() {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, group_id = ? WHERE id = ?", config.CompleteAction, id)
 										}
 									}
+
+									if Helpers.Replenish(scriptId, groupId, schedule, customer) {
+										botsStarted++
+									}
+
 									fmt.Println("Daemon:", name, "has been tagged as completed")
+									botsClosed++
 								}
 							} else {
 								// restart any bots not running their intended script
@@ -118,29 +123,7 @@ func Begin() {
 								botsClosed++
 							}
 
-							scriptData := Helpers.GetScriptById(scriptId)
-							if scriptData.Id > 0 && scriptData.AutoReplenish > 0 {
-								var newId int
-								err = Storage.GetDb().QueryRow("SELECT id FROM accounts WHERE group_id = ? LIMIT 1", scriptData.AutoReplenish).Scan(&newId)
-
-								if err != nil || err == sql.ErrNoRows {
-									fmt.Println("Daemon: No bots are in auto-replenishment group for script:", scriptData.PublicName)
-									continue
-								}
-
-								_, err := Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ? WHERE pid = 0 AND group_id = ? AND customer_id = ?", groupId, scriptId, schedule, scriptData.AutoReplenish, customer)
-
-								if err != nil {
-									fmt.Println("Daemon:", err)
-								}
-
-								newPid, newLog := Helpers.StartBotFromId(customer, newId)
-								err = Helpers.UpdateBotStatus(newId, newPid, newLog)
-								if err != nil {
-									fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-									Helpers.KillBot(id, customer)
-								}
-
+							if Helpers.Replenish(scriptId, groupId, schedule, customer) {
 								botsStarted++
 							}
 						}
@@ -162,9 +145,12 @@ func Begin() {
 				}
 
 				if pid > 0 {
+					botStatus := Helpers.GetBotStatus(id)
 					if currentHour == endHour && currentMin >= endMin {
-						botsClosed++
-						Helpers.KillBot(id, customer)
+						if botStatus == "BREAK" || (currentMin > (endMin+15) || endMin+15 > 60) { //TODO store a queue of bots to close and how often to recheck
+							botsClosed++
+							Helpers.KillBot(id, customer)
+						}
 						continue
 					}
 				} else {
@@ -185,7 +171,7 @@ func Begin() {
 
 			_ = rows.Close()
 
-			fmt.Println("Daemon has detected", botsDetected, "bots. Restarted:", botsRestarted, "| Started:", botsStarted, "| Stopped:", botsClosed, "| Undetected:", botsUndetected)
+			fmt.Println("Daemon:", botsDetected-botsClosed, "detected |", botsRestarted, "restarted |", botsStarted, "started |", botsClosed, "closed |", botsUndetected, "undetected")
 			time.Sleep(cycleTime)
 		} else {
 			fmt.Println("Daemon is deactivated until a valid license code is present.")

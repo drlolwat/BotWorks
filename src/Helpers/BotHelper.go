@@ -98,7 +98,7 @@ func GetPid(botId int) int {
 	return pid
 }
 
-func StartFromDbRows(rows *sql.Rows, userId int) {
+func StartFromDbRows(rows *sql.Rows, userId int, delay int) {
 	go func() {
 		defer func(rows *sql.Rows) {
 			err := rows.Close()
@@ -121,7 +121,14 @@ func StartFromDbRows(rows *sql.Rows, userId int) {
 				fmt.Println(err)
 				return
 			}
-			time.Sleep(3 * time.Second) // mass starts wait an additional 3 seconds to make sure they get the logfile
+
+			delayTime := time.Duration(delay) * time.Minute
+
+			if delay <= 0 {
+				time.Sleep(3 * time.Second) // mass starts wait an additional 3 seconds to make sure they get the logfile
+			} else {
+				time.Sleep(delayTime)
+			}
 		}
 	}()
 }

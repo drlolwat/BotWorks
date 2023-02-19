@@ -5,7 +5,9 @@ package Helpers
 
 import (
 	"fmt"
+	"github.com/creack/pty"
 	"os"
+	"os/exec"
 	"syscall"
 )
 
@@ -54,4 +56,17 @@ func KillBot(botId int, userId int) {
 	}
 
 	return
+}
+
+func SetWindowTitle(title string) error {
+	cmd := exec.Command("/bin/sh")
+	f, err := pty.Start(cmd)
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintf(f, "\033]0;%s\007", title)
+	if err != nil {
+		return err
+	}
+	return nil
 }

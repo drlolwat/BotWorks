@@ -8,7 +8,11 @@ import (
 	"syscall"
 )
 
-var OperatingSystem = "windows"
+var (
+	kernel32             = syscall.MustLoadDLL("kernel32.dll")
+	procSetConsoleTitleW = kernel32.MustFindProc("SetConsoleTitleW")
+	OperatingSystem      = "windows"
+)
 
 func IsBotRunning(pid int) bool {
 	if !authenticated {
@@ -45,4 +49,19 @@ func KillBot(botId int, userId int) {
 	}
 
 	return
+}
+
+func SetWindowTitle(title string) error {
+	hwnd := syscall.Handle(0xffff) // HWND_TOPMOST
+	lpString := utf16.Encode([]rune(title))
+	_, _, err := syscall.Syscall(
+		procSetConsoleTitleW.Addr(),
+		2,
+		uintptr(unsafe.Pointer(&lpString[0])),
+		uintptr(1),
+		uintptr(0))
+	if err != 0 {
+		return err
+	}
+	return nil
 }
