@@ -71,7 +71,7 @@ func GetBotStatus(botId int) string {
 		}
 	} else if strings.Contains(lastTen, "reached target ttl and qp") {
 		return "COMPLETE"
-	} else if strings.Contains(lastTen, "no script") {
+	} else if strings.Contains(lastTen, "running: none") {
 		return "NOSCRIPT"
 	}
 

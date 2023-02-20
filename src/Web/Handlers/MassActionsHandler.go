@@ -121,6 +121,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 						}
 
 						_ = res.Close()
+
 						if proxyId <= 0 {
 							fmt.Println("No available unused proxies in the system")
 							break
