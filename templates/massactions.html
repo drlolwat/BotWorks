@@ -11,7 +11,7 @@
                 <div class="section-block" id="c-nav">
                 </div>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
                 <div class="card">
 
                     <div class="card-header">
@@ -87,7 +87,7 @@
                                 <tr>
                                     <td></td>
                                     <td>
-                                        <input type='submit' name='add_accounts' value='Add accounts' class='form-control'>
+                                        <input type='submit' name='add_accounts' value='Add accounts' class='form-control btn btn-primary'>
                                     </td>
                                 </tr>
                             </table>
@@ -95,13 +95,25 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+            <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
                 <div class="card">
-
+                    <div class="card-header">
+                        Mass Account Actions
+                    </div>
+                    <div class="card-body">
+                        You can perform various actions with your accounts here.
+                        <br /><br />
+                        <form method="post">
+                            <input type="submit" name="assign_all" value="Assign un-used proxies to accounts" class="form-control btn btn-primary" data-toggle="tooltip" data-html="true" data-placement="top" title="This will assign un-used proxies to all accounts that do not have one.<br />Will not assign proxies to banned accounts if you have a group set up.">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="card">
                     <div class="card-header">
                         Mass Add Proxies
                     </div>
-
                     <div class="card-body">
                         You can mass add proxies through this form. The format is ip:port:username:password
                         <br /><br />
@@ -109,7 +121,7 @@
                             <textarea rows="10" name="proxies" class="form-control" style="width:97%;padding:2.5px;length:120px;"></textarea>
                             <br />
                             <br />
-                            <input type="submit" name="add_proxies" value="Add proxies" class="form-control">
+                            <input type="submit" name="add_proxies" value="Add proxies" class="form-control btn btn-primary">
                         </form>
                     </div>
                 </div>

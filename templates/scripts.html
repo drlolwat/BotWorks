@@ -86,9 +86,9 @@
                                     <tr>
                                         <td>
                                             {{ if .AddingScript }}
-                                                <input type='submit' name='add' value='Add script' class='form-control' style="width:40%">
+                                                <input type='submit' name='add' value='Add script' class='form-control btn btn-primary' style="width:40%">
                                             {{ else if .EditingScript }}
-                                                <input type='submit' name='update' value='Modify script' class='form-control' style="width:40%">
+                                                <input type='submit' name='update' value='Modify script' class='form-control btn btn-primary' style="width:40%">
                                                 <input type='hidden' name='id' value='{{ .ScriptData.Id }}'>
                                             {{ end }}
                                         </td>

@@ -38,6 +38,8 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 		Url:      "massactions",
 	}
 
+	config := Config.GetConfig()
+
 	if r.PostForm.Has("add_proxies") {
 		if r.FormValue("proxies") != "" {
 			split := strings.Split(r.FormValue("proxies"), "\r\n")
@@ -98,30 +100,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					proxyId := -1
 
 					if proxyOption == 1 {
-						res, _ := Storage.GetDb().Query("SELECT id FROM proxies WHERE customer_id = ? AND bans = 0 ORDER BY RANDOM()", user.Id)
-
-						for res.Next() {
-							var dbId int
-							err = res.Scan(&dbId)
-
-							if err != nil {
-								fmt.Println(err)
-								break
-							}
-
-							if dbId > 0 {
-								var used int
-								err = Storage.GetDb().QueryRow("SELECT proxy_id FROM accounts WHERE proxy_id = ?", dbId).Scan(&used)
-
-								if err != nil || err == sql.ErrNoRows {
-									proxyId = dbId
-									break
-								}
-							}
-						}
-
-						_ = res.Close()
-
+						proxyId = Helpers.GetUnusedProxy(user.Id)
 						if proxyId <= 0 {
 							fmt.Println("No available unused proxies in the system")
 							break
@@ -143,10 +122,34 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+	} else if r.PostForm.Has("assign_all") {
+		rows, err := Storage.GetDb().Query("SELECT id,group_id FROM accounts WHERE proxy_id <= 0 AND customer_id = ?", user.Id)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		for rows.Next() {
+			var id int
+			var group int
+			err := rows.Scan(&id, &group)
+
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			if config.BannedAction > 0 && config.BannedAction == group {
+				continue
+			}
+
+			newProxy := Helpers.GetUnusedProxy(user.Id)
+			_, _ = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = ? WHERE id = ?", newProxy, id)
+		}
 	}
 
 	pageData := map[string]interface{}{
-		"Config":    Config.GetConfig(),
+		"Config":    config,
 		"Scripts":   Helpers.GetScripts(),
 		"Schedules": Helpers.GetSchedules(user.Id),
 		"Groups":    Helpers.GetGroups(user.Id),

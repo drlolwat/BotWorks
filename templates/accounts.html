@@ -126,9 +126,9 @@
                                         <td></td>
                                         <td>
                                             {{ if .AddingAccount }}
-                                                <input type='submit' name='add' value='Add account' class='form-control'>
+                                                <input type='submit' name='add' value='Add account' class='form-control btn btn-primary'>
                                             {{ else if .EditingAccount }}
-                                                <input type='submit' name='update' value='Modify account' class='form-control'>
+                                                <input type='submit' name='update' value='Modify account' class='form-control btn btn-primary'>
                                                 <input type="hidden" name="account_id" value="{{ .EditingAccount }}" class="form-control">
                                             {{ end }}
                                         </td>

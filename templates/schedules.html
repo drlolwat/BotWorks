@@ -58,9 +58,9 @@
                                 <input type="number" name="start_hour" value="{{ .ScheduleData.StartHour }}" style="width:40px;"> <b>:</b> <input type="number" name="start_min" value="{{ .ScheduleData.StartMinute }}" style="width:40px;">
                                 and turn off at <input type="number" name="end_hour" value="{{ .ScheduleData.EndHour }}" style="width:40px;"> <b>:</b> <input type="number" name="end_min" value="{{ .ScheduleData.EndMinute }}" style="width:40px;"><br /><br />
                                 {{ if .AddingSchedule }}
-                                    <input type='submit' name='add' value='Add schedule' class='form-control' style="width:20%">
+                                    <input type='submit' name='add' value='Add schedule' class='form-control btn btn-primary' style="width:20%">
                                 {{ else if .EditingSchedule }}
-                                    <input type='submit' name='update' value='Modify schedule' class='form-control' style="width:20%">
+                                    <input type='submit' name='update' value='Modify schedule' class='form-control btn btn-primary' style="width:20%">
                                     <input type='hidden' name='id' value='{{ .ScheduleData.Id }}'>
                                 {{ end }}
                             </form>
