@@ -8,4 +8,6 @@ type DashboardData struct {
 	OnlineBotData  []DashboardBotData
 	OfflineBotData []DashboardBotData
 	GroupData      []GroupData
+	LeftMessage    string
+	RightMessage   string
 }

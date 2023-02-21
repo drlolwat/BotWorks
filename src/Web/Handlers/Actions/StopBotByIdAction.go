@@ -29,6 +29,6 @@ func StopBotByIdAction(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 	Helpers.KillBot(id, user.Id)
 
-	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/dashboard?ks", http.StatusTemporaryRedirect)
 	return
 }

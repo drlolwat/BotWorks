@@ -37,6 +37,15 @@
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
             <div class="card">
                 <div class="card-header">
+                    {{ if ne .LeftMessage "" }}
+                    <div class="alert alert-success" role="alert">
+                        {{ if eq .LeftMessage "SUCCESS_SINGLE" }}
+                        Successfully sent command to stop bot.
+                        {{ else if eq .LeftMessage "SUCCESS_GROUP" }}
+                        Successfully sent command to stop group.
+                        {{ end }}
+                    </div>
+                    {{ end }}
                     Online Accounts
                 </div>
                 <div class="card-header tab-regular">
@@ -161,8 +170,17 @@
         </div>
   
         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 col-lg-6 col-md-6 col-sm-12 col-12">
-          <div class="card">
-              <div class="card-header">
+            <div class="card">
+                <div class="card-header">
+                    {{ if ne .RightMessage "" }}
+                        <div class="alert alert-success" role="alert">
+                            {{ if eq .RightMessage "SUCCESS_SINGLE" }}
+                                Successfully sent command to start bot.
+                            {{ else if eq .RightMessage "SUCCESS_GROUP" }}
+                                Successfully sent command to start group.
+                            {{ end }}
+                        </div>
+                    {{ end }}
                   Offline Accounts
               </div>
 

@@ -41,5 +41,5 @@ func StartBotByIdAction(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/dashboard?ss", http.StatusTemporaryRedirect)
 }

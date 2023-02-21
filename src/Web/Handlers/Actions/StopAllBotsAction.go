@@ -51,6 +51,6 @@ func StopAllBotsAction(w http.ResponseWriter, r *http.Request) {
 		Helpers.KillBot(botId, user.Id)
 	}
 
-	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/dashboard?kg", http.StatusTemporaryRedirect)
 	return
 }

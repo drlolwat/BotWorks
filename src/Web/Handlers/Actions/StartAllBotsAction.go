@@ -45,6 +45,6 @@ func StartAllBotsAction(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Helpers.StartFromDbRows(rows, user.Id, delay)
-	http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/dashboard?sg", http.StatusTemporaryRedirect)
 	return
 }

@@ -72,7 +72,7 @@ func Begin() {
 										}
 									} else {
 										if config.CompleteAction > 0 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, group_id = ? WHERE id = ?", config.CompleteAction, id)
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", config.CompleteAction, id)
 										}
 									}
 
