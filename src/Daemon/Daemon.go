@@ -76,7 +76,7 @@ func Begin() {
 										}
 									}
 
-									if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+									if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy, id) {
 										botsStarted++
 									}
 
@@ -124,7 +124,7 @@ func Begin() {
 								botsClosed++
 							}
 
-							if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+							if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy, id) {
 								botsStarted++
 							}
 						}
