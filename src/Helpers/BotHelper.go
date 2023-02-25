@@ -69,7 +69,7 @@ func GetBotStatus(botId int) string {
 		} else if strings.Contains(lastTen, "locked") {
 			return "LOCKED"
 		}
-	} else if strings.Contains(lastTen, "reached target ttl and qp") {
+	} else if strings.Contains(lastTen, "reached target ttl and qp") || strings.Contains(lastTen, "reached non-99 target levels and qp") {
 		return "COMPLETE"
 	} else if strings.Contains(lastTen, "running: none") || strings.Contains(lastTen, "problem starting") {
 		return "NOSCRIPT"
