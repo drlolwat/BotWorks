@@ -17,6 +17,12 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 			return false
 		}
 
+		newProxy := GetUnusedProxy(customer, 0)
+		if newProxy > 0 {
+			proxy = newProxy
+			fmt.Println("Daemon: New IP was assigned for account ID ", newId)
+		}
+
 		_, err = Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ?, script_params = ?, proxy_id = ? WHERE pid = 0 AND group_id = ? AND customer_id = ? AND id = ?", groupId, scriptId, schedule, params, proxy, scriptData.AutoReplenish, customer, newId)
 
 		if err != nil {

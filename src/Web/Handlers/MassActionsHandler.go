@@ -100,7 +100,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					proxyId := -1
 
 					if proxyOption == 1 {
-						proxyId = Helpers.GetUnusedProxy(user.Id)
+						proxyId = Helpers.GetUnusedProxy(user.Id, 1)
 						if proxyId <= 0 {
 							fmt.Println("No available unused proxies in the system")
 							break
@@ -143,7 +143,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			newProxy := Helpers.GetUnusedProxy(user.Id)
+			newProxy := Helpers.GetUnusedProxy(user.Id, 1)
 			_, _ = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = ? WHERE id = ?", newProxy, id)
 		}
 	}
