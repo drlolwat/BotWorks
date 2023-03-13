@@ -120,8 +120,9 @@ func GetDb() *sql.DB {
 
 func RunUpdates() {
 	addColumnIfNotExists("scripts", "auto_replenish", "int", 0)
-	addColumnIfNotExists("configuration", "banned_action", "int", 0)
-	addColumnIfNotExists("configuration", "complete_action", "int", 0)
+	addColumnIfNotExists("account_groups", "banned_action", "int", 0)
+	addColumnIfNotExists("account_groups", "complete_action", "int", 0)
+	addColumnIfNotExists("account_groups", "locked_action", "int", 0)
 	addColumnIfNotExists("proxies", "bans", "int", 0)
 	addColumnIfNotExists("configuration", "port", "int", 80)
 }

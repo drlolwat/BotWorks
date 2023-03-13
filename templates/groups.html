@@ -52,7 +52,51 @@
                         </div>
                         <div class="card-body">
                             <form method="post">
-                                You are currently {{ if .AddingGroup }} adding {{ else }} modifying {{ end }} the <input type="input" name="name" class="form-control" value="{{ .GroupData.Name }}" style="width:100px;display:inline;"> group.<br /> <br />
+                                <table style="width:70%">
+                                    <tr>
+                                        <td>Group Name</td>
+                                        <td><input type="input" name="name" class="form-control" value="{{ .GroupData.Name }}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Banned Account Actions
+                                        </td>
+                                        <td>
+                                            {{ $d := .GroupData }}
+                                            <select name="banned_action" class="form-control">
+                                                <option value="0" {{if eq .GroupData.BannedAction 0 }} selected {{end}}>No Action</option>
+                                                <option value="-1" {{if eq .GroupData.BannedAction -1 }} selected {{end}}>Delete</option>
+                                                {{ range .Groups }}
+                                                <option value="{{ .Id }}" {{ if eq .Id $d.BannedAction }} selected {{end}}>Stop and move to: {{ .Name }}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Locked Account Actions</td>
+                                        <td>
+                                            <select name="locked_action" class="form-control">
+                                                <option value="0"{{if eq .GroupData.LockedAction 0}} selected{{end}}>No Action</option>
+                                                <option value="-1"{{if eq .GroupData.LockedAction -1}} selected{{end}}>Delete</option>
+                                                {{ range .Groups }}
+                                                <option value="{{.Id}}"{{if eq .Id $d.LockedAction}} selected{{end}}>Stop and move to: {{.Name}}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Complete Account Actions</td>
+                                        <td>
+                                            <select name="complete_action" class="form-control">
+                                                <option value="0"{{if eq .GroupData.CompletedAction 0}} selected{{end}}>No Action</option>
+                                                <option value="-1"{{if eq .GroupData.CompletedAction -1}} selected{{end}}>Stop & remove from schedule</option>
+                                                {{ range .Groups }}
+                                                <option value="{{.Id}}"{{if eq .Id $d.CompletedAction}} selected{{end}}>Stop and move to: {{.Name}}</option>
+                                                {{ end }}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
 
                                 {{ if .AddingGroup }}
                                     <input type='submit' name='add' value='Add group' class='form-control btn btn-primary' style="width:20%">
@@ -60,6 +104,7 @@
                                     <input type='submit' name='update' value='Modify group' class='form-control btn btn-primary' style="width:20%">
                                     <input type='hidden' name='id' value='{{ .GroupData.Id }}'>
                                 {{ end }}
+
                             </form>
                         </div>
                     {{ else }}

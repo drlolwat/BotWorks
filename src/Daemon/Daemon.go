@@ -1,7 +1,6 @@
 package Daemon
 
 import (
-	"BotWorks/src/Config"
 	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
 	"fmt"
@@ -16,7 +15,6 @@ func Begin() {
 
 	for true {
 		if Helpers.License() {
-			config := Config.GetConfig()
 			currentTime := Helpers.TimeString()
 			splitTime := strings.Split(currentTime, ":")
 			currentHour, _ := strconv.Atoi(splitTime[0])
@@ -61,71 +59,95 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
-						if botStatus != "BANNED" {
-							if botStatus == "COMPLETE" {
-								if config.CompleteAction != 0 {
+						if groupId > 0 {
+							groupData := Helpers.GetGroupById(groupId, customer)
+							if botStatus != "BANNED" {
+								if botStatus == "COMPLETE" {
+									if groupData.CompletedAction != 0 {
+										Helpers.KillBot(id, customer)
+										if groupData.CompletedAction == -1 {
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+											if err != nil {
+												fmt.Println("Daemon:", err)
+											}
+										} else {
+											if groupData.CompletedAction > 0 {
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
+											}
+										}
+
+										if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+											botsStarted++
+										}
+
+										fmt.Println("Daemon:", name, "has been tagged as completed")
+										botsClosed++
+									}
+								} else if botStatus == "LOCKED" {
+									if groupData.LockedAction != 0 {
+										Helpers.KillBot(id, customer)
+										if groupData.CompletedAction == -1 {
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+											if err != nil {
+												fmt.Println("Daemon:", err)
+											}
+										} else {
+											if groupData.CompletedAction > 0 {
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.LockedAction, id)
+											}
+										}
+
+										if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+											botsStarted++
+										}
+
+										fmt.Println("Daemon:", name, "has been tagged as completed")
+										botsClosed++
+									}
+								} else {
+									// restart any bots not running their intended script
+									if botStatus == "NOSCRIPT" {
+										Helpers.KillBot(id, customer)
+										time.Sleep(650 * time.Millisecond)
+										newPid, newLog := Helpers.StartBotFromId(customer, id)
+										err := Helpers.UpdateBotStatus(id, newPid, newLog)
+										if err != nil {
+											fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+											Helpers.KillBot(id, customer)
+											continue
+										}
+										botsRestarted++
+									}
+								}
+							} else {
+								if groupData.BannedAction != 0 {
 									Helpers.KillBot(id, customer)
-									if config.CompleteAction == -1 {
-										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+									if groupData.BannedAction == -1 {
+										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
 										if err != nil {
 											fmt.Println("Daemon:", err)
 										}
-									} else {
-										if config.CompleteAction > 0 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", config.CompleteAction, id)
+
+									} else if groupData.BannedAction == -2 {
+										// something but i forgot
+									} else if groupData.BannedAction > 0 {
+										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.BannedAction, id)
+										if err != nil {
+											fmt.Println("Daemon:", err)
 										}
 									}
 
-									if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
-										botsStarted++
+									if proxy > 0 {
+										_, err = Storage.GetDb().Exec("UPDATE proxies SET bans = bans + 1 WHERE id = ?", proxy)
 									}
 
-									fmt.Println("Daemon:", name, "has been tagged as completed")
+									fmt.Println("Daemon:", name, "has been tagged as banned")
 									botsClosed++
 								}
-							} else {
-								// restart any bots not running their intended script
-								if botStatus == "NOSCRIPT" {
-									Helpers.KillBot(id, customer)
-									time.Sleep(650 * time.Millisecond)
-									newPid, newLog := Helpers.StartBotFromId(customer, id)
-									err := Helpers.UpdateBotStatus(id, newPid, newLog)
-									if err != nil {
-										fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-										Helpers.KillBot(id, customer)
-										continue
-									}
-									botsRestarted++
+
+								if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+									botsStarted++
 								}
-							}
-						} else {
-							if config.BannedAction != 0 {
-								Helpers.KillBot(id, customer)
-								if config.BannedAction == -1 {
-									_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
-									if err != nil {
-										fmt.Println("Daemon:", err)
-									}
-
-								} else if config.BannedAction == -2 {
-									// something but i forgot
-								} else if config.BannedAction > 0 {
-									_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", config.BannedAction, id)
-									if err != nil {
-										fmt.Println("Daemon:", err)
-									}
-								}
-
-								if proxy > 0 {
-									_, err = Storage.GetDb().Exec("UPDATE proxies SET bans = bans + 1 WHERE id = ?", proxy)
-								}
-
-								fmt.Println("Daemon:", name, "has been tagged as banned")
-								botsClosed++
-							}
-
-							if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
-								botsStarted++
 							}
 						}
 

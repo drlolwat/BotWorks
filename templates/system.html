@@ -57,46 +57,6 @@
 
                     <div class="card-body">
                         <form method="post">
-                            <table style="width:70%">
-                                <tr>
-                                    <td>
-                                        Banned Account Actions
-                                    </td>
-                                    <td>
-                                        {{ $d := .Config }}
-                                        <select name="banned_action" class="form-control">
-                                            <option value="0" {{if eq .Config.BannedAction 0 }} selected {{end}}>No Action</option>
-                                            <option value="-1" {{if eq .Config.BannedAction -1 }} selected {{end}}>Delete</option>
-                                            {{ range .Groups }}
-                                                <option value="{{ .Id }}" {{ if eq .Id $d.BannedAction }} selected {{end}}>Move to Group: {{ .Name }}</option>
-                                            {{ end }}
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Complete Account Actions</td>
-                                    <td>
-                                        <select name="complete_action" class="form-control">
-                                            <option value="0"{{if eq .Config.CompleteAction 0}} selected{{end}}>No Action</option>
-                                            <option value="-1"{{if eq .Config.CompleteAction -1}} selected{{end}}>Stop & remove from schedule</option>
-                                            {{ range .Groups }}
-                                                <option value="{{.Id}}"{{if eq .Id $d.CompleteAction}} selected{{end}}>Stop and move to: {{.Name}}</option>
-                                            {{ end }}
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="submit" name="update_system" value="Update Config" class="form-control btn btn-primary" style="width:160px;">
-                                    </td>
-                                    <td>
-
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <hr style="width:75%">
-                        <form method="post">
                             <table style="width:100%">
                                 <tr>
                                     <td><span style="color:red;font-weight:bold;">Reset Entire Panel</span></td>

@@ -47,16 +47,6 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(err)
 			}
 		}
-	} else if r.PostForm.Has("update_system") {
-		if r.FormValue("banned_action") != "" && r.FormValue("complete_action") != "" {
-			action := r.FormValue("banned_action")
-			completeAction := r.FormValue("complete_action")
-
-			_, err := Storage.GetDb().Exec("UPDATE configuration SET banned_action = ?, complete_action = ?", action, completeAction)
-			if err != nil {
-				fmt.Println("Updating system:", err)
-			}
-		}
 	} else if r.PostForm.Has("oh_shit_button") {
 		_, err := Storage.GetDb().Exec("DELETE FROM account_groups WHERE id > 0")
 

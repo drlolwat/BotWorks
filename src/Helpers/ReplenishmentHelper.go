@@ -20,7 +20,20 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 		newProxy := GetUnusedProxy(customer, 0)
 		if newProxy > 0 {
 			proxy = newProxy
-			fmt.Println("Daemon: New IP was assigned for account ID ", newId)
+		} else {
+			newProxy = GetUnusedProxy(customer, 3)
+			if newProxy > 0 {
+				proxy = newProxy
+			} else {
+				newProxy = GetUnusedProxy(customer, 7)
+				if newProxy > 0 {
+					proxy = newProxy
+				}
+			}
+		}
+
+		if newProxy <= 0 {
+			fmt.Println("Dameon: Replenishing account with the same proxy, no spares available.")
 		}
 
 		_, err = Storage.GetDb().Exec("UPDATE accounts SET group_id = ?, script_id = ?, schedule = ?, script_params = ?, proxy_id = ? WHERE pid = 0 AND group_id = ? AND customer_id = ? AND id = ?", groupId, scriptId, schedule, params, proxy, scriptData.AutoReplenish, customer, newId)

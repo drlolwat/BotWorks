@@ -6,9 +6,9 @@ import (
 	"BotWorks/src/Structs"
 	"BotWorks/src/Web/Sessions"
 	"BotWorks/src/Web/Template"
-	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func GroupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,12 +36,16 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.PostForm.Has("update") || r.PostForm.Has("add") {
-		if r.FormValue("name") != "" {
-
+		if r.FormValue("name") != "" && r.FormValue("banned_action") != "" && r.FormValue("locked_action") != "" &&
+			r.FormValue("complete_action") != "" {
 			nickname := r.FormValue("name")
+			bannedAction := r.FormValue("banned_action")
+			lockedAction := r.FormValue("locked_action")
+			completeAction := r.FormValue("complete_action")
+
 			if r.PostForm.Has("update") && r.FormValue("id") != "" {
 				groupId := r.FormValue("id")
-				_, err := Storage.GetDb().Exec("UPDATE account_groups SET name = ? WHERE id = ? AND customer_id = ?", nickname, groupId, user.Id)
+				_, err := Storage.GetDb().Exec("UPDATE account_groups SET name = ?, complete_action = ?, locked_action = ?, banned_action = ? WHERE id = ? AND customer_id = ?", nickname, completeAction, lockedAction, bannedAction, groupId, user.Id)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -49,7 +53,7 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostForm.Has("add") {
-				_, err := Storage.GetDb().Exec("INSERT INTO account_groups (name, customer_id) VALUES (?, ?)", nickname, user.Id)
+				_, err := Storage.GetDb().Exec("INSERT INTO account_groups (name, customer_id, complete_action, locked_action, banned_action) VALUES (?, ?, ?, ?, ?)", nickname, user.Id, completeAction, lockedAction, bannedAction)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -76,34 +80,15 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
-		if err != nil {
-			fmt.Println(err)
+		groupId, _ := strconv.Atoi(r.URL.Query().Get("e"))
+		groupStructData := Helpers.GetGroupById(groupId, user.Id)
+
+		if groupStructData.Id <= 0 {
+			fmt.Println("Unable to find group:", groupStructData.Id)
 			return
 		}
 
-		defer func(rows *sql.Rows) {
-			err := rows.Close()
-			if err != nil {
-				fmt.Println(err)
-			}
-		}(rows)
-
-		for rows.Next() {
-			var id int
-			var name string
-
-			err = rows.Scan(&id, &name)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			groupsPageData["GroupData"] = Structs.GroupData{
-				Id:   id,
-				Name: name,
-			}
-		}
+		groupsPageData["GroupData"] = groupStructData
 
 	} else if r.URL.Query().Has("a") {
 		groupsPageData["GroupData"] = Structs.GroupData{

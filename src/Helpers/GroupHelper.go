@@ -9,7 +9,7 @@ import (
 
 func GetGroups(customerId int) []Structs.GroupData {
 	botsOnline, botsOffline, _ := GetBotsByCustomerId(customerId)
-	rows, err := Storage.GetDb().Query("SELECT id,name FROM account_groups WHERE customer_id= ?", customerId)
+	rows, err := Storage.GetDb().Query("SELECT id,name,complete_action,locked_action,banned_action,auto_replenish FROM account_groups WHERE customer_id= ?", customerId)
 
 	if err != nil {
 		fmt.Println(err)
@@ -28,8 +28,12 @@ func GetGroups(customerId int) []Structs.GroupData {
 	for rows.Next() {
 		var id int
 		var name string
+		var completeAction int
+		var lockedAction int
+		var bannedAction int
+		var autoReplenish int
 
-		err := rows.Scan(&id, &name)
+		err := rows.Scan(&id, &name, &completeAction, &lockedAction, &bannedAction, &autoReplenish)
 		if err != nil {
 			return nil
 		}
@@ -47,13 +51,47 @@ func GetGroups(customerId int) []Structs.GroupData {
 		}
 
 		allGroups = append(allGroups, Structs.GroupData{
-			Id:          id,
-			Name:        name,
-			BotsOnline:  botsOnline,
-			BotsOffline: botsOffline,
-			BotsCount:   len(myBots),
+			Id:              id,
+			Name:            name,
+			BotsOnline:      botsOnline,
+			BotsOffline:     botsOffline,
+			BotsCount:       len(myBots),
+			CompletedAction: completeAction,
+			LockedAction:    lockedAction,
+			BannedAction:    bannedAction,
+			AutoReplenish:   autoReplenish,
 		})
 	}
 
 	return allGroups
+}
+
+func GetGroupById(groupId int, customerId int) Structs.GroupData {
+	var id int
+	var name string
+	var completeAction int
+	var lockedAction int
+	var bannedAction int
+	var autoReplenish int
+
+	err := Storage.GetDb().QueryRow("SELECT id,name,complete_action,locked_action,banned_action,auto_replenish FROM account_groups WHERE id = ?", groupId).Scan(&id, &name, &completeAction, &lockedAction, &bannedAction, &autoReplenish)
+
+	if err != nil {
+		fmt.Println("GroupHelper:", err)
+		return Structs.GroupData{Id: -1}
+	}
+
+	botsOnline, botsOffline, _ := GetBotsByCustomerId(customerId)
+
+	return Structs.GroupData{
+		Id:              id,
+		Name:            name,
+		BotsOnline:      botsOnline,
+		BotsOffline:     botsOffline,
+		BotsCount:       len(botsOffline) + len(botsOnline),
+		CompletedAction: completeAction,
+		LockedAction:    lockedAction,
+		BannedAction:    bannedAction,
+		AutoReplenish:   autoReplenish,
+	}
 }
