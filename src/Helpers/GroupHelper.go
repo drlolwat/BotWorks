@@ -9,7 +9,7 @@ import (
 
 func GetGroups(customerId int) []Structs.GroupData {
 	botsOnline, botsOffline, _ := GetBotsByCustomerId(customerId)
-	rows, err := Storage.GetDb().Query("SELECT id,name,complete_action,locked_action,banned_action,auto_replenish FROM account_groups WHERE customer_id= ?", customerId)
+	rows, err := Storage.GetDb().Query("SELECT id,name,complete_action,locked_action,banned_action FROM account_groups WHERE customer_id= ?", customerId)
 
 	if err != nil {
 		fmt.Println(err)
@@ -31,9 +31,8 @@ func GetGroups(customerId int) []Structs.GroupData {
 		var completeAction int
 		var lockedAction int
 		var bannedAction int
-		var autoReplenish int
 
-		err := rows.Scan(&id, &name, &completeAction, &lockedAction, &bannedAction, &autoReplenish)
+		err := rows.Scan(&id, &name, &completeAction, &lockedAction, &bannedAction)
 		if err != nil {
 			return nil
 		}
@@ -59,7 +58,6 @@ func GetGroups(customerId int) []Structs.GroupData {
 			CompletedAction: completeAction,
 			LockedAction:    lockedAction,
 			BannedAction:    bannedAction,
-			AutoReplenish:   autoReplenish,
 		})
 	}
 
@@ -72,9 +70,7 @@ func GetGroupById(groupId int, customerId int) Structs.GroupData {
 	var completeAction int
 	var lockedAction int
 	var bannedAction int
-	var autoReplenish int
-
-	err := Storage.GetDb().QueryRow("SELECT id,name,complete_action,locked_action,banned_action,auto_replenish FROM account_groups WHERE id = ?", groupId).Scan(&id, &name, &completeAction, &lockedAction, &bannedAction, &autoReplenish)
+	err := Storage.GetDb().QueryRow("SELECT id,name,complete_action,locked_action,banned_action FROM account_groups WHERE id = ?", groupId).Scan(&id, &name, &completeAction, &lockedAction, &bannedAction)
 
 	if err != nil {
 		fmt.Println("GroupHelper:", err)
@@ -92,6 +88,5 @@ func GetGroupById(groupId int, customerId int) Structs.GroupData {
 		CompletedAction: completeAction,
 		LockedAction:    lockedAction,
 		BannedAction:    bannedAction,
-		AutoReplenish:   autoReplenish,
 	}
 }

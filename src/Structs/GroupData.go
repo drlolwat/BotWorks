@@ -9,5 +9,4 @@ type GroupData struct {
 	CompletedAction int
 	BannedAction    int
 	LockedAction    int
-	AutoReplenish   int
 }
