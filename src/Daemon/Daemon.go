@@ -101,7 +101,7 @@ func Begin() {
 											botsStarted++
 										}
 
-										fmt.Println("Daemon:", name, "has been tagged as completed")
+										fmt.Println("Daemon:", name, "has been tagged as locked")
 										botsClosed++
 									}
 								} else {
