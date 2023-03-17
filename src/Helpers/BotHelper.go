@@ -58,7 +58,7 @@ func GetBotStatus(botId int) string {
 		return "BREAK"
 	}
 
-	lastTen := TailFile(filepath, 10)
+	lastTen := TailFile(filepath, 30)
 	lastTen = strings.ToLower(lastTen)
 
 	if strings.Contains(lastTen, "members_world") {
