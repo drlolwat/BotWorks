@@ -224,6 +224,8 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			args = append(args, "-world", "308")
 		} else if strings.Contains(strings.ToLower(scriptSdnName), "todt") {
 			args = append(args, "-world", "307")
+		} else if strings.Contains(strings.ToLower(scriptSdnName), "watminer") {
+			args = append(args, "-world", "f2p")
 		} else {
 			args = append(args, "-world", "members")
 		}
