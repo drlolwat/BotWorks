@@ -139,10 +139,6 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			if config.BannedAction > 0 && config.BannedAction == group {
-				continue
-			}
-
 			newProxy := Helpers.GetUnusedProxy(user.Id, 1)
 			_, _ = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = ? WHERE id = ?", newProxy, id)
 		}
