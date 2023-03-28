@@ -127,7 +127,7 @@ func StartFromDbRows(rows *sql.Rows, userId int, delay int) {
 			delayTime := time.Duration(delay) * time.Minute
 
 			if delay <= 0 {
-				time.Sleep(10 * time.Second) // mass starts wait an additional 10 seconds to make sure they get the logfile
+				time.Sleep(3 * time.Second) // mass starts wait an additional 3 seconds to make sure they get the logfile
 			} else {
 				time.Sleep(delayTime)
 			}
@@ -253,7 +253,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		}
 
 		pid := command.Process.Pid
-		time.Sleep(15 * time.Second)
+		time.Sleep(3 * time.Second)
 		return pid, GetLatestLogFile()
 	}
 

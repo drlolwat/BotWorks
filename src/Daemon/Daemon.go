@@ -50,6 +50,7 @@ func Begin() {
 				}
 
 				if pid > 0 {
+					//STATS-Attack:69 Defence:68 Strength:70 Hitpoints:74 Ranged:70 Prayer:44 Magic:70 Cooking:75 Woodcutting:75 Fletching:1 Fishing:71 Firemaking:67 Crafting:72 Smithing:56 Mining:66 Herblore:1 Agility:1 Thieving:1 Slayer:1 Farming:1 Runecrafting:45 Hunter:1 Construction:1 TOTAL:1000 TOTAL_THIS_SESSION:0 CMB:86 QP:16 QP_THIS_SESSION:0 GP:-1 GP_THIS_SESSION:0 LOGIN_TIME:1291616101 LOGIN_TIME_THIS_SESSION:1981 RESTRICTED:0 BANNED:0
 					botStatus := Helpers.GetBotStatus(id)
 					if !Helpers.IsBotRunning(pid) {
 						_, err = Storage.GetDb().Exec("UPDATE accounts SET pid = 0 WHERE pid = ?", pid)
