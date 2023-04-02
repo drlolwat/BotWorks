@@ -4,10 +4,13 @@ import (
 	"BotWorks/src/Config"
 	"BotWorks/src/Storage"
 	"BotWorks/src/Structs"
+	"bufio"
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -47,6 +50,27 @@ func GetLogFileWithKeyword(keyword string) string {
 			logFile := files[i].Name()
 			if strings.Contains(logFile, keyword) {
 				return logFile
+			} else {
+				filePath := filepath.Join(config.DreambotLogsDir, logFile)
+				file, err := os.Open(filePath)
+				if err != nil {
+					fmt.Println("Error opening file:", err)
+					continue
+				}
+				defer file.Close()
+
+				// Read the first 30 lines of the file
+				scanner := bufio.NewScanner(file)
+				for j := 0; scanner.Scan() && j < 30; j++ {
+					if strings.Contains(scanner.Text(), keyword) {
+						return logFile
+					}
+				}
+
+				if err := scanner.Err(); err != nil {
+					fmt.Println("Error scanning file:", err)
+					continue
+				}
 			}
 		}
 	}
