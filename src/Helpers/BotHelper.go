@@ -28,6 +28,32 @@ func GetLatestLogFile() string {
 	return logFile
 }
 
+func GetLogFileWithKeyword(keyword string) string {
+	config := Config.GetConfig()
+	files, err := ReadDir(config.DreambotLogsDir)
+	if err != nil {
+		fmt.Println("Error reading directory:", err)
+		return ""
+	}
+
+	// Sort files by creation time in descending order
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().After(files[j].ModTime())
+	})
+
+	// Look at the last 10 files created
+	for i := 0; i < 10 && i < len(files); i++ {
+		if !files[i].IsDir() {
+			logFile := files[i].Name()
+			if strings.Contains(logFile, keyword) {
+				return logFile
+			}
+		}
+	}
+
+	return ""
+}
+
 func GetBotStatus(botId int) string {
 	config := Config.GetConfig()
 	var fileName string
@@ -254,7 +280,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 
 		pid := command.Process.Pid
 		time.Sleep(3 * time.Second)
-		return pid, GetLatestLogFile()
+		return pid, GetLogFileWithKeyword(botLoginName) //GetLatestLogFile()
 	}
 
 	return 0, ""
