@@ -303,7 +303,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		}
 
 		pid := command.Process.Pid
-		time.Sleep(3 * time.Second)
+		time.Sleep(60 * time.Second)
 		return pid, GetLogFileWithKeyword(botLoginName) //GetLatestLogFile()
 	}
 
