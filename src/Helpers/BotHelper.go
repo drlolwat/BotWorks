@@ -45,7 +45,7 @@ func GetLogFileWithKeyword(keyword string) string {
 	})
 
 	// Look at the last 10 files created
-	for i := 0; i < 10 && i < len(files); i++ {
+	for i := 0; i < 100 && i < len(files); i++ {
 		if !files[i].IsDir() {
 			logFile := files[i].Name()
 			if strings.Contains(logFile, keyword) {
@@ -61,7 +61,7 @@ func GetLogFileWithKeyword(keyword string) string {
 
 				// Read the first 30 lines of the file
 				scanner := bufio.NewScanner(file)
-				for j := 0; scanner.Scan() && j < 30; j++ {
+				for j := 0; scanner.Scan() && j < 100; j++ {
 					if strings.Contains(scanner.Text(), keyword) {
 						return logFile
 					}

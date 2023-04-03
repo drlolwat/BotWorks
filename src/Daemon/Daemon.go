@@ -60,6 +60,14 @@ func Begin() {
 						botsUndetected++
 						continue
 					} else {
+						if len(logfile) == 0 || logfile == "" {
+							logfile = Helpers.GetLogFileWithKeyword(name)
+							if logfile != "" {
+								fmt.Println("Daemon:", name, "using corrected logfile")
+								_, err = Storage.GetDb().Exec("UPDATE accounts SET logfile = ? WHERE id = ?", logfile, id)
+							}
+						}
+
 						if groupId > 0 {
 							groupData := Helpers.GetGroupById(groupId, customer)
 							if botStatus != "BANNED" {
