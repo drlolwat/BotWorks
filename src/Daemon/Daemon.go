@@ -89,7 +89,7 @@ func Begin() {
 											botsStarted++
 										}
 
-										fmt.Println("Daemon:", name, "has been tagged as completed")
+										fmt.Println("Daemon:", name, "(", pid, ") has been tagged as completed")
 										botsClosed++
 									}
 								} else if botStatus == "LOCKED" {
@@ -110,7 +110,7 @@ func Begin() {
 											botsStarted++
 										}
 
-										fmt.Println("Daemon:", name, "has been tagged as locked")
+										fmt.Println("Daemon:", name, "(", pid, ") has been tagged as locked")
 										botsClosed++
 									}
 								} else {
@@ -150,7 +150,7 @@ func Begin() {
 										_, err = Storage.GetDb().Exec("UPDATE proxies SET bans = bans + 1 WHERE id = ?", proxy)
 									}
 
-									fmt.Println("Daemon:", name, "has been tagged as banned")
+									fmt.Println("Daemon:", name, "(", pid, ") has been tagged as banned")
 									botsClosed++
 								}
 

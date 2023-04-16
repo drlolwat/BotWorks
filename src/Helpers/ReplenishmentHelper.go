@@ -43,12 +43,14 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 			return false
 		}
 
-		newPid, newLog := StartBotFromId(customer, newId)
-		err = UpdateBotStatus(newId, newPid, newLog)
-		if err != nil {
-			fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-			KillBot(newId, customer)
-		}
+		go func() {
+			newPid, newLog := StartBotFromId(customer, newId)
+			err = UpdateBotStatus(newId, newPid, newLog)
+			if err != nil {
+				fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+				KillBot(newId, customer)
+			}
+		}()
 
 		return true
 	}

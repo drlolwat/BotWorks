@@ -95,7 +95,7 @@
                                             <select name='proxy_id' class='form-control' required>
                                                 <option value="-1">No Proxy</option>
                                                 {{ range .Proxies }}
-                                                    <option value="{{ .Id }}"{{ if eq .Id $botData.ProxyId }} selected{{ end }}>{{ .Name }} ({{ .Accounts }})</option>
+                                                    <option value="{{ .Id }}"{{ if eq .Id $botData.ProxyId }} selected{{ end }}>{{ .Name }} (accs: {{ .Accounts }}, bans: {{ .Bans }})</option>
                                                 {{ end }}
                                             </select>
                                         </td>
