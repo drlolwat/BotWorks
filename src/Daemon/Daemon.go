@@ -64,7 +64,7 @@ func Begin() {
 							logfile = Helpers.GetLogFileWithKeyword(name)
 							if logfile != "" {
 								fmt.Println("Daemon:", name, "using corrected logfile")
-								_, err = Storage.GetDb().Exec("UPDATE accounts SET logfile = ? WHERE pid = ?", logfile, pid)
+								_, err = Storage.GetDb().Exec("UPDATE accounts SET logfile = ? WHERE id = ?", logfile, id)
 								if err != nil {
 									fmt.Println(err)
 								}
@@ -77,13 +77,13 @@ func Begin() {
 								if botStatus == "COMPLETE" {
 									if groupData.CompletedAction != 0 {
 										if groupData.CompletedAction == -1 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE pid = ?", pid)
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
 												fmt.Println("Daemon:", err)
 											}
 										} else {
 											if groupData.CompletedAction > 0 {
-												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.CompletedAction, pid)
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
 											}
 											if err != nil {
 												fmt.Println(err)
@@ -101,13 +101,13 @@ func Begin() {
 								} else if botStatus == "LOCKED" {
 									if groupData.LockedAction != 0 {
 										if groupData.CompletedAction == -1 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE pid = ?", pid)
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
 												fmt.Println("Daemon:", err)
 											}
 										} else {
 											if groupData.CompletedAction > 0 {
-												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.LockedAction, pid)
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.LockedAction, id)
 												if err != nil {
 													fmt.Println(err)
 												}
@@ -140,7 +140,7 @@ func Begin() {
 							} else {
 								if groupData.BannedAction != 0 {
 									if groupData.BannedAction == -1 {
-										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE pid = ?", pid)
+										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
 										if err != nil {
 											fmt.Println("Daemon:", err)
 										}
@@ -148,7 +148,7 @@ func Begin() {
 									} else if groupData.BannedAction == -2 {
 										// something but i forgot
 									} else if groupData.BannedAction > 0 {
-										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.BannedAction, pid)
+										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.BannedAction, id)
 										if err != nil {
 											fmt.Println("Daemon:", err)
 										}
