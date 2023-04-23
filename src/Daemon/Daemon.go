@@ -64,7 +64,10 @@ func Begin() {
 							logfile = Helpers.GetLogFileWithKeyword(name)
 							if logfile != "" {
 								fmt.Println("Daemon:", name, "using corrected logfile")
-								_, err = Storage.GetDb().Exec("UPDATE accounts SET logfile = ? WHERE id = ?", logfile, id)
+								_, err = Storage.GetDb().Exec("UPDATE accounts SET logfile = ? WHERE pid = ?", logfile, pid)
+								if err != nil {
+									fmt.Println(err)
+								}
 							}
 						}
 
@@ -75,13 +78,16 @@ func Begin() {
 									if groupData.CompletedAction != 0 {
 										Helpers.KillBot(id, customer)
 										if groupData.CompletedAction == -1 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE pid = ?", pid)
 											if err != nil {
 												fmt.Println("Daemon:", err)
 											}
 										} else {
 											if groupData.CompletedAction > 0 {
-												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.CompletedAction, pid)
+											}
+											if err != nil {
+												fmt.Println(err)
 											}
 										}
 
@@ -96,13 +102,16 @@ func Begin() {
 									if groupData.LockedAction != 0 {
 										Helpers.KillBot(id, customer)
 										if groupData.CompletedAction == -1 {
-											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
+											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE pid = ?", pid)
 											if err != nil {
 												fmt.Println("Daemon:", err)
 											}
 										} else {
 											if groupData.CompletedAction > 0 {
-												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.LockedAction, id)
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.LockedAction, pid)
+												if err != nil {
+													fmt.Println(err)
+												}
 											}
 										}
 
@@ -132,7 +141,7 @@ func Begin() {
 								if groupData.BannedAction != 0 {
 									Helpers.KillBot(id, customer)
 									if groupData.BannedAction == -1 {
-										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
+										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE pid = ?", pid)
 										if err != nil {
 											fmt.Println("Daemon:", err)
 										}
@@ -140,7 +149,7 @@ func Begin() {
 									} else if groupData.BannedAction == -2 {
 										// something but i forgot
 									} else if groupData.BannedAction > 0 {
-										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.BannedAction, id)
+										_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE pid = ?", groupData.BannedAction, pid)
 										if err != nil {
 											fmt.Println("Daemon:", err)
 										}
