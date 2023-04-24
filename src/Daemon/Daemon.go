@@ -85,6 +85,7 @@ func Begin() {
 											if groupData.CompletedAction > 0 {
 												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
 											}
+
 											if err != nil {
 												fmt.Println(err)
 											}
@@ -99,14 +100,15 @@ func Begin() {
 										botsClosed++
 									}
 								} else if botStatus == "LOCKED" {
+									fmt.Println("lockedAction:", groupData.LockedAction)
 									if groupData.LockedAction != 0 {
-										if groupData.CompletedAction == -1 {
+										if groupData.LockedAction == -1 {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
 												fmt.Println("Daemon:", err)
 											}
 										} else {
-											if groupData.CompletedAction > 0 {
+											if groupData.LockedAction > 0 {
 												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.LockedAction, id)
 												if err != nil {
 													fmt.Println(err)
