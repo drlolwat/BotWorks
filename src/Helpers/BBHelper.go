@@ -19,7 +19,7 @@ const (
 
 var key = []byte("AES_LOLWAT_KEYBB")
 var authenticated = false
-var Version = "2.0.4"
+var Version = "2.0.5"
 
 func License() bool {
 	licenseKey, err := readLicenseKey()
