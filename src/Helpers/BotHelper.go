@@ -237,6 +237,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 			"-jar",
 			"-Xms256M",
 			"-Xmx1G",
+			"--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
 			config.DreambotJar,
 			"-username",
 			config.DreambotUsername,
