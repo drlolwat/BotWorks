@@ -76,6 +76,7 @@ func Begin() {
 							if botStatus != "BANNED" {
 								if botStatus == "COMPLETE" {
 									if groupData.CompletedAction != 0 {
+										Helpers.KillBot(id, customer)
 										if groupData.CompletedAction == -1 {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
@@ -96,12 +97,11 @@ func Begin() {
 										}
 
 										fmt.Println("Daemon:", name, "(", pid, ") has been tagged as completed")
-										Helpers.KillBot(id, customer)
 										botsClosed++
 									}
 								} else if botStatus == "LOCKED" {
-									fmt.Println("lockedAction:", groupData.LockedAction)
 									if groupData.LockedAction != 0 {
+										Helpers.KillBot(id, customer)
 										if groupData.LockedAction == -1 {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
@@ -120,7 +120,6 @@ func Begin() {
 											botsStarted++
 										}
 
-										Helpers.KillBot(id, customer)
 										fmt.Println("Daemon:", name, "(", pid, ") has been tagged as locked")
 										botsClosed++
 									}
@@ -141,6 +140,8 @@ func Begin() {
 								}
 							} else {
 								if groupData.BannedAction != 0 {
+									Helpers.KillBot(id, customer)
+
 									if groupData.BannedAction == -1 {
 										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
 										if err != nil {
@@ -160,7 +161,6 @@ func Begin() {
 										_, err = Storage.GetDb().Exec("UPDATE proxies SET bans = bans + 1 WHERE id = ?", proxy)
 									}
 
-									Helpers.KillBot(id, customer)
 									fmt.Println("Daemon:", name, "(", pid, ") has been tagged as banned")
 									botsClosed++
 								}
