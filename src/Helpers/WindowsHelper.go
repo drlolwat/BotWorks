@@ -5,7 +5,12 @@ package Helpers
 
 import (
 	"fmt"
+	"image"
+	"os/exec"
+	"strconv"
 	"syscall"
+	"unicode/utf16"
+	"unsafe"
 )
 
 var (
@@ -52,7 +57,6 @@ func KillBot(botId int, userId int) {
 }
 
 func SetWindowTitle(title string) error {
-	hwnd := syscall.Handle(0xffff) // HWND_TOPMOST
 	lpString := utf16.Encode([]rune(title))
 	_, _, err := syscall.Syscall(
 		procSetConsoleTitleW.Addr(),

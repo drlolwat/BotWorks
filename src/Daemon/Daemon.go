@@ -76,7 +76,7 @@ func Begin() {
 							if botStatus != "BANNED" {
 								if botStatus == "COMPLETE" {
 									if groupData.CompletedAction != 0 {
-										Helpers.KillBot(id, customer)
+										Helpers.KillBot(pid, customer)
 										if groupData.CompletedAction == -1 {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
@@ -101,7 +101,7 @@ func Begin() {
 									}
 								} else if botStatus == "LOCKED" {
 									if groupData.LockedAction != 0 {
-										Helpers.KillBot(id, customer)
+										Helpers.KillBot(pid, customer)
 										if groupData.LockedAction == -1 {
 											_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0 WHERE id = ?", id)
 											if err != nil {
@@ -126,13 +126,13 @@ func Begin() {
 								} else {
 									// restart any bots not running their intended script
 									if botStatus == "NOSCRIPT" {
-										Helpers.KillBot(id, customer)
+										Helpers.KillBot(pid, customer)
 										time.Sleep(650 * time.Millisecond)
 										newPid, newLog := Helpers.StartBotFromId(customer, id)
 										err := Helpers.UpdateBotStatus(id, newPid, newLog)
 										if err != nil {
 											fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-											Helpers.KillBot(id, customer)
+											Helpers.KillBot(pid, customer)
 											continue
 										}
 										botsRestarted++
@@ -140,7 +140,7 @@ func Begin() {
 								}
 							} else {
 								if groupData.BannedAction != 0 {
-									Helpers.KillBot(id, customer)
+									Helpers.KillBot(pid, customer)
 
 									if groupData.BannedAction == -1 {
 										_, err = Storage.GetDb().Exec("DELETE FROM accounts WHERE id = ?", id)
@@ -192,7 +192,7 @@ func Begin() {
 					if currentHour == endHour && currentMin >= endMin {
 						if botStatus == "BREAK" || currentMin+1 >= 60 || len(breaks) <= 2 { //TODO store a queue of bots to close and how often to recheck
 							botsClosed++
-							Helpers.KillBot(id, customer)
+							Helpers.KillBot(pid, customer)
 						}
 						continue
 					}
@@ -203,7 +203,7 @@ func Begin() {
 						err := Helpers.UpdateBotStatus(id, newPid, newLog)
 						if err != nil {
 							fmt.Println("Big error issue starting bot, could not update status!")
-							Helpers.KillBot(id, customer)
+							Helpers.KillBot(pid, customer)
 							continue
 						}
 						time.Sleep(5 * time.Second)
