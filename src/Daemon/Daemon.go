@@ -84,7 +84,7 @@ func Begin() {
 											}
 										} else {
 											if groupData.CompletedAction > 0 {
-												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, proxy_id = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
+												_, err = Storage.GetDb().Exec("UPDATE accounts SET schedule = 0, group_id = ? WHERE id = ?", groupData.CompletedAction, id)
 											}
 
 											if err != nil {
@@ -163,10 +163,10 @@ func Begin() {
 
 									fmt.Println("Daemon:", name, "(", pid, ") has been tagged as banned")
 									botsClosed++
-								}
 
-								if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
-									botsStarted++
+									if Helpers.Replenish(scriptId, groupId, schedule, customer, params, proxy) {
+										botsStarted++
+									}
 								}
 							}
 						}

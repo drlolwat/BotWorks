@@ -10,7 +10,7 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 	scriptData := GetScriptById(scriptId)
 	if scriptData.Id > 0 && scriptData.AutoReplenish > 0 {
 		var newId int
-		err := Storage.GetDb().QueryRow("SELECT id FROM accounts WHERE group_id = ? LIMIT 1", scriptData.AutoReplenish).Scan(&newId)
+		err := Storage.GetDb().QueryRow("SELECT id FROM accounts WHERE group_id = ? AND pid = 0 LIMIT 1", scriptData.AutoReplenish).Scan(&newId)
 
 		if err != nil || err == sql.ErrNoRows {
 			fmt.Println("Daemon: No bots are in auto-replenishment group for script:", scriptData.PublicName)
@@ -43,14 +43,12 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 			return false
 		}
 
-		go func() {
-			newPid, newLog := StartBotFromId(customer, newId)
-			err = UpdateBotStatus(newId, newPid, newLog)
-			if err != nil {
-				fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
-				KillBot(newId, customer)
-			}
-		}()
+		newPid, newLog := StartBotFromId(customer, newId)
+		err = UpdateBotStatus(newId, newPid, newLog)
+		if err != nil {
+			fmt.Println("Daemon:", "Big error issue restarting bot, could not update status!")
+			KillBot(newId, customer)
+		}
 
 		return true
 	}
