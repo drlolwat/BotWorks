@@ -115,8 +115,49 @@
 
                         </div>
                     {{ end }}
-                </div>
 
+                    {{ if .EditingGroup }}
+                            <div class="card-header">
+                                Proxy Management
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <input type="hidden" name="id" value="{{ .GroupData.Id }}">
+                                    <table style="width:100%;border-spacing:10px;border-collapse:separate;">
+                                        <tr>
+                                            <td>
+                                                <input type="submit" name="add_proxies" value="Add proxies to group" class="form-control btn btn-outline-primary">
+                                            </td>
+                                            <td>
+                                                <input type="submit" name="remove_proxies" value="Remove proxies from group" class="form-control btn btn-outline-secondary">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                            <div class="card-header">
+                                Exporting and Account Management
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <table style="width:100%;border-spacing:10px;border-collapse:separate;">
+                                        <tr>
+                                            <td>
+                                                <input type="submit" name="export_accounts" value="Export accounts" class="form-control btn btn-outline-success">
+                                            </td>
+                                            <td>
+                                                <input type="submit" name="delete_accounts" value="Delete accounts" class="form-control btn btn-outline-danger">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+
+                                {{ if gt (len .ExportString) 0 }}
+                                    <textarea class="form-control">{{ .ExportString }}</textarea>
+                                {{ end }}
+                            </div>
+                    {{ end }}
+                </div>
             </div>
         </div>
     </div>

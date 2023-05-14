@@ -39,7 +39,8 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 		id := "0"
 		if r.FormValue("name") != "" && r.FormValue("password") != "" && r.FormValue("bank_pin") != "" &&
 			r.FormValue("proxy_id") != "" && r.FormValue("script_id") != "" &&
-			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" {
+			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" &&
+			r.FormValue("world") != "" {
 
 			breaks := ""
 			params := ""
@@ -49,11 +50,10 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			pin := r.FormValue("bank_pin")
 			proxy := r.FormValue("proxy_id")
 			script := r.FormValue("script_id")
-			//params := r.FormValue("params")
 			sched := r.FormValue("schedule_id")
 			grp := r.FormValue("group_id")
-			//breaks := r.FormValue("breaks")
 			fps := r.FormValue("fps")
+			world := r.FormValue("world")
 
 			if r.FormValue("breaks") != "" {
 				breaks = r.FormValue("breaks")
@@ -65,7 +65,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 
 			if r.PostForm.Has("update") && r.FormValue("account_id") != "" {
 				id = r.FormValue("account_id")
-				_, err := Storage.GetDb().Exec("UPDATE accounts SET name = ?, password = ?, bank_pin = ?, proxy_id = ?, script_id = ?, script_params = ?, schedule = ?, group_id = ?, breaks = ?, fps = ? WHERE id = ? AND customer_id=?", username, password, pin, proxy, script, params, sched, grp, breaks, fps, id, user.Id)
+				_, err := Storage.GetDb().Exec("UPDATE accounts SET name = ?, password = ?, bank_pin = ?, proxy_id = ?, script_id = ?, script_params = ?, schedule = ?, group_id = ?, breaks = ?, fps = ?, world = ? WHERE id = ? AND customer_id=?", username, password, pin, proxy, script, params, sched, grp, breaks, fps, world, id, user.Id)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -73,7 +73,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if r.PostForm.Has("add") {
-				_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, proxy, script, params, user.Id, "", 0, grp, breaks, sched, fps)
+				_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps, world) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, pin, proxy, script, params, user.Id, "", 0, grp, breaks, sched, fps, world)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -107,7 +107,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Has("e") {
-		rows, err := Storage.GetDb().Query("SELECT id,name,password,bank_pin,script_params,breaks,fps,script_id,proxy_id,schedule,group_id FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
+		rows, err := Storage.GetDb().Query("SELECT id,name,password,bank_pin,script_params,breaks,fps,script_id,proxy_id,schedule,group_id,world FROM accounts WHERE id = ? AND customer_id = ?", r.URL.Query().Get("e"), user.Id)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -133,8 +133,9 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			var proxyId int
 			var sched int
 			var groupId int
+			var world string
 
-			err := rows.Scan(&id, &name, &pass, &pin, &params, &breaks, &fps, &scriptId, &proxyId, &sched, &groupId)
+			err := rows.Scan(&id, &name, &pass, &pin, &params, &breaks, &fps, &scriptId, &proxyId, &sched, &groupId, &world)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -152,6 +153,7 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 				ProxyId:    proxyId,
 				ScheduleId: sched,
 				GroupId:    groupId,
+				World:      world,
 			}
 		}
 	} else if r.URL.Query().Has("a") {
@@ -162,11 +164,12 @@ func AccountsHandler(w http.ResponseWriter, r *http.Request) {
 			Pin:        -1,
 			Params:     "",
 			Breaks:     "",
-			Fps:        "20",
+			Fps:        "10",
 			ScriptId:   -1,
 			ProxyId:    -1,
 			ScheduleId: -1,
 			GroupId:    -1,
+			World:      "f2p",
 		}
 	}
 

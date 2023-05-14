@@ -78,7 +78,7 @@ func GetProxies(customerId int) []Structs.ProxyData {
 	return allProxies
 }
 
-func GetUnusedProxy(customer int, maxBans int) int {
+func GetRandomProxy(customer int, maxBans int, unUsed bool) int {
 	res, _ := Storage.GetDb().Query("SELECT id FROM proxies WHERE customer_id = ? AND bans <= ? ORDER BY RANDOM()", customer, maxBans)
 	ret := -1
 
@@ -92,15 +92,20 @@ func GetUnusedProxy(customer int, maxBans int) int {
 		}
 
 		if dbId > 0 {
-			var used int
-			err = Storage.GetDb().QueryRow("SELECT proxy_id FROM accounts WHERE proxy_id = ?", dbId).Scan(&used)
+			if unUsed {
+				var used int
+				err = Storage.GetDb().QueryRow("SELECT proxy_id FROM accounts WHERE proxy_id = ?", dbId).Scan(&used)
 
-			if err != nil || err == sql.ErrNoRows {
+				if err != nil || err == sql.ErrNoRows {
+					ret = dbId
+				}
+			} else {
 				ret = dbId
 			}
 		}
+
+		_ = res.Close()
 	}
 
-	_ = res.Close()
 	return ret
 }

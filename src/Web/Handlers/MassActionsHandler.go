@@ -66,7 +66,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.PostForm.Has("add_accounts") {
 		if r.FormValue("accounts") != "" && r.FormValue("script_id") != "" &&
 			r.FormValue("schedule_id") != "" && r.FormValue("group_id") != "" && r.FormValue("fps") != "" &&
-			r.FormValue("proxies") != "" {
+			r.FormValue("proxies") != "" && r.FormValue("world") != "" {
 
 			breaks := ""
 			params := ""
@@ -75,6 +75,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 			sched := r.FormValue("schedule_id")
 			grp := r.FormValue("group_id")
 			fps := r.FormValue("fps")
+			world := r.FormValue("world")
 
 			if r.FormValue("breaks") != "" {
 				breaks = r.FormValue("breaks")
@@ -100,7 +101,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 					proxyId := -1
 
 					if proxyOption == 1 {
-						proxyId = Helpers.GetUnusedProxy(user.Id, 1)
+						proxyId = Helpers.GetRandomProxy(user.Id, 1, true)
 						if proxyId <= 0 {
 							fmt.Println("No available unused proxies in the system")
 							break
@@ -115,7 +116,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 
-					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, "-1", proxyId, script, params, user.Id, "", 0, grp, breaks, sched, fps)
+					_, err := Storage.GetDb().Exec("INSERT INTO accounts (name, password, bank_pin, proxy_id, script_id, script_params, customer_id, logfile, pid, group_id, breaks, schedule, fps, world) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", username, password, "-1", proxyId, script, params, user.Id, "", 0, grp, breaks, sched, fps, world)
 					if err != nil {
 						fmt.Println(err)
 					}
@@ -139,7 +140,7 @@ func MassActionsHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			newProxy := Helpers.GetUnusedProxy(user.Id, 1)
+			newProxy := Helpers.GetRandomProxy(user.Id, 1, true)
 			_, _ = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = ? WHERE id = ?", newProxy, id)
 		}
 	}

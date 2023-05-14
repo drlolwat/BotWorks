@@ -90,3 +90,79 @@ func GetGroupById(groupId int, customerId int) Structs.GroupData {
 		BannedAction:    bannedAction,
 	}
 }
+
+func AssignProxies(customer int, group int) {
+	rows, err := Storage.GetDb().Query("SELECT id FROM accounts WHERE group_id = ? AND proxy_id <= 0", group)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		var id int
+
+		err = rows.Scan(&id)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		newProxy := GetRandomProxy(customer, 0, true)
+		if newProxy > 0 {
+			_, err = Storage.GetDb().Exec("UPDATE accounts SET proxy_id = ? WHERE id = ?", newProxy, id)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+}
+
+func RemoveProxies(group int) {
+	_, err := Storage.GetDb().Exec("UPDATE accounts SET proxy_id = -1 WHERE group_id = ?", group)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func ExportAccounts(group int) string {
+	rows, err := Storage.GetDb().Query("SELECT name,password FROM accounts WHERE group_id = ?", group)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	builder := ""
+
+	for rows.Next() {
+		var name string
+		var pass string
+
+		err = rows.Scan(&name, &pass)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		builder = builder + "\r\n" + name + ":" + pass
+	}
+
+	return builder
+}
+
+func DeleteAccounts(group int) {
+	_, err := Storage.GetDb().Exec("DELETE FROM accounts WHERE group_id = ?", group)
+	if err != nil {
+		fmt.Println(err)
+	}
+}

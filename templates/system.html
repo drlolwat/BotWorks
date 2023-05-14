@@ -38,8 +38,16 @@
                                     <td><input type="password" name="pass" value="{{ .Config.DreambotPassword }}" class="form-control"></td>
                                 </tr>
                                 <tr>
+                                    <td>Client minimum RAM (Xms)</td>
+                                    <td><input type="text" name="java_xms" value="{{ .Config.JavaXms }}" class="form-control"></td>
+                                </tr>
+                                <tr>
+                                    <td>Client maximum RAM (Xmx)</td>
+                                    <td><input type="text" name="java_xmx" value="{{ .Config.JavaXmx }}" class="form-control"></td>
+                                </tr>
+                                <tr>
                                     <td>
-                                        <input type="submit" name="update" value="Update Configuration" class="form-control btn btn-primary">
+                                        <input type="submit" name="update" value="Update DreamBot" class="form-control btn btn-primary">
                                     </td>
                                     <td></td>
                                 </tr>
@@ -55,6 +63,29 @@
                         BotBuddy Configuration
                     </div>
 
+                    <div class="card-body">
+                        <form method="post">
+                            <table style="width:100%">
+                                <tr>
+                                    <td>BotBuddy Port (requires restart)</td>
+                                    <td>
+                                        <input type="number" name="bb_port" value="{{ .Config.BBPort }}" class="form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="submit" name="update_bb" value="Update BotBuddy" class="form-control btn btn-primary">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </form>
+
+                    </div>
+
+                    <div class="card-header">
+                        BotBuddy Reset Switch
+                    </div>
                     <div class="card-body">
                         <form method="post">
                             <table style="width:100%">

@@ -125,6 +125,9 @@ func RunUpdates() {
 	addColumnIfNotExists("account_groups", "locked_action", "int", 0)
 	addColumnIfNotExists("proxies", "bans", "int", 0)
 	addColumnIfNotExists("configuration", "port", "int", 80)
+	addColumnIfNotExists("accounts", "world", "string", "f2p")
+	addColumnIfNotExists("configuration", "java_xms", "string", "512M")
+	addColumnIfNotExists("configuration", "java_xmx", "string", "1G")
 }
 
 func addColumnIfNotExists(tableName string, columnName string, dataType interface{}, defaultValue interface{}) {

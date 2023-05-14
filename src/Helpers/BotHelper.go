@@ -204,9 +204,10 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 	var botFps string
 	var scriptDbId int
 	var scriptSdnName string
+	var botWorld string
 
 	rows, err := Storage.GetDb().Query(
-		"SELECT a.id,a.name,a.password,a.bank_pin,a.proxy_id,a.script_id,a.script_params,a.breaks,a.fps,"+
+		"SELECT a.id,a.name,a.password,a.bank_pin,a.proxy_id,a.script_id,a.script_params,a.breaks,a.fps,a.world,"+
 			"b.id,b.backend_name FROM accounts AS a JOIN scripts AS b ON (a.script_id=b.id) WHERE a.id = ? AND a.customer_id = ?", pBotId, userId)
 	if err != nil {
 		fmt.Println(err)
@@ -222,7 +223,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 	}(rows)
 
 	for rows.Next() {
-		err := rows.Scan(&botId, &botLoginName, &botLoginPass, &botBankPin, &proxyId, &scriptId, &scriptParams, &botBreaks, &botFps, &scriptDbId, &scriptSdnName)
+		err := rows.Scan(&botId, &botLoginName, &botLoginPass, &botBankPin, &proxyId, &scriptId, &scriptParams, &botBreaks, &botFps, &botWorld, &scriptDbId, &scriptSdnName)
 		if err != nil {
 			fmt.Println(err)
 			return 0, ""
@@ -235,8 +236,8 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 
 		args := []string{
 			"-jar",
-			"-Xms256M",
-			"-Xmx1G",
+			"-Xms" + config.JavaXms,
+			"-Xmx" + config.JavaXmx,
 			config.DreambotJar,
 			"-username",
 			config.DreambotUsername,
@@ -277,7 +278,7 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		} else if strings.Contains(strings.ToLower(scriptSdnName), "watminer") {
 			args = append(args, "-world", "f2p")
 		} else {
-			args = append(args, "-world", "members")
+			args = append(args, "-world", botWorld)
 		}
 
 		if scriptParams != "" {
@@ -294,6 +295,8 @@ func StartBotFromId(userId int, pBotId int) (int, string) {
 		if OperatingSystem != "windows" {
 			execType = "java"
 		}
+
+		//fmt.Println("started bot with:", args)
 
 		command := exec.Command(execType, args...)
 		err = command.Start()

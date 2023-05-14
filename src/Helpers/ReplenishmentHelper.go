@@ -17,15 +17,15 @@ func Replenish(scriptId int, groupId int, schedule int, customer int, params str
 			return false
 		}
 
-		newProxy := GetUnusedProxy(customer, 0)
+		newProxy := GetRandomProxy(customer, 0, true)
 		if newProxy > 0 {
 			proxy = newProxy
 		} else {
-			newProxy = GetUnusedProxy(customer, 3)
+			newProxy = GetRandomProxy(customer, 3, true)
 			if newProxy > 0 {
 				proxy = newProxy
 			} else {
-				newProxy = GetUnusedProxy(customer, 7)
+				newProxy = GetRandomProxy(customer, 7, true)
 				if newProxy > 0 {
 					proxy = newProxy
 				}

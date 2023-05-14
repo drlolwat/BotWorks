@@ -36,13 +36,25 @@ func SystemConfigHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.PostForm.Has("update") {
-		if r.FormValue("jar") != "" && r.FormValue("logs") != "" && r.FormValue("user") != "" && r.FormValue("pass") != "" {
+		if r.FormValue("jar") != "" && r.FormValue("logs") != "" && r.FormValue("user") != "" && r.FormValue("pass") != "" &&
+			r.FormValue("java_xms") != "" && r.FormValue("java_xmx") != "" {
 			dbJar := r.FormValue("jar")
 			dbLogs := r.FormValue("logs")
 			dbUser := r.FormValue("user")
 			dbPass := r.FormValue("pass")
+			javaXms := r.FormValue("java_xms")
+			javaXmx := r.FormValue("java_xmx")
 
-			_, err := Storage.GetDb().Exec("UPDATE configuration SET db_jar = ?, db_logs = ?, db_username = ?, db_password = ?", dbJar, dbLogs, dbUser, dbPass)
+			_, err := Storage.GetDb().Exec("UPDATE configuration SET db_jar = ?, db_logs = ?, db_username = ?, db_password = ?, java_xms = ?, java_xmx = ?", dbJar, dbLogs, dbUser, dbPass, javaXms, javaXmx)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	} else if r.PostForm.Has("update_bb") {
+		if r.FormValue("bb_port") != "" {
+			bbPort := r.FormValue("bb_port")
+
+			_, err := Storage.GetDb().Exec("UPDATE configuration SET port = ?", bbPort)
 			if err != nil {
 				fmt.Println(err)
 			}

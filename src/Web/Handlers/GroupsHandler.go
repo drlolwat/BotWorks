@@ -35,6 +35,8 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 		Url:      "groups",
 	}
 
+	exportString := ""
+
 	if r.PostForm.Has("update") || r.PostForm.Has("add") {
 		if r.FormValue("name") != "" && r.FormValue("banned_action") != "" && r.FormValue("locked_action") != "" &&
 			r.FormValue("complete_action") != "" {
@@ -88,6 +90,19 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if r.PostForm.Has("add_proxies") {
+			Helpers.AssignProxies(user.Id, groupId)
+
+		} else if r.PostForm.Has("remove_proxies") {
+			Helpers.RemoveProxies(groupId)
+		}
+
+		if r.PostForm.Has("export_accounts") {
+			exportString = Helpers.ExportAccounts(groupId)
+		} else if r.PostForm.Has("delete_accounts") {
+			Helpers.DeleteAccounts(groupId)
+		}
+
 		groupsPageData["GroupData"] = groupStructData
 
 	} else if r.URL.Query().Has("a") {
@@ -96,6 +111,8 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 			Name: "New Group",
 		}
 	}
+
+	groupsPageData["ExportString"] = exportString
 
 	err := Template.GetTpl().ExecuteTemplate(w, "bootstrap_header.html", headerInfo)
 	if err != nil {

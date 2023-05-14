@@ -12,4 +12,5 @@ type BotData struct {
 	ProxyId    int
 	ScheduleId int
 	GroupId    int
+	World      string
 }

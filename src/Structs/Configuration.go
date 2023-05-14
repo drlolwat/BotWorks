@@ -5,4 +5,7 @@ type Configuration struct {
 	DreambotLogsDir  string
 	DreambotUsername string
 	DreambotPassword string
+	JavaXms          string
+	JavaXmx          string
+	BBPort           int
 }

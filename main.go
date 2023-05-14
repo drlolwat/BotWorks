@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BotWorks/src/Config"
 	"BotWorks/src/Daemon"
 	"BotWorks/src/Helpers"
 	"BotWorks/src/Storage"
@@ -9,11 +10,13 @@ import (
 	"BotWorks/src/Web/Sessions"
 	"BotWorks/src/Web/Template"
 	"bufio"
+	"fmt"
 	_ "fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func init() {
@@ -54,9 +57,11 @@ func main() {
 	fs := http.FileServer(http.Dir("assets"))
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", fs))
 
+	cfg := Config.GetConfig()
+
 	// begin routine for web serving
 	go func() {
-		err := http.ListenAndServe(":80", r)
+		err := http.ListenAndServe(":"+strconv.Itoa(cfg.BBPort), r)
 		if err != nil {
 			println(err)
 		}
@@ -77,7 +82,7 @@ func main() {
 
 	Storage.RunUpdates()
 
-	println("Server is now listening on port 80")
+	fmt.Println("Server is now listening on port", cfg.BBPort)
 
 	// Keep this bitch going forever and ever, perhaps implement commands
 	for true {
